@@ -82,6 +82,18 @@ ProgAlgSPIFlash::~ProgAlgSPIFlash(void)
     fclose(fp_dbg);
 }
 
+int ProgAlgSPIFlash::spi_flashinfo_spansion(unsigned char *buf){
+  fprintf(stderr, "Found Spansion Device, Device ID %02x, memory type %02x, capacity %02x\n",
+         buf[1], buf[2], buf[3]);
+  switch (buf[3]){
+  case 0x01:
+    pages = 4096;
+  }
+  pgsize = 256;
+  return 1;
+}
+
+
 int ProgAlgSPIFlash::spi_flashinfo_s33(unsigned char *buf) 
 {
   fprintf(stderr, "Found Intel Device, Device ID 0x%02x%02x\n",
@@ -510,6 +522,9 @@ int ProgAlgSPIFlash::spi_flashinfo(void)
   
   switch (fbuf[0])
     {
+    case 0x01:
+      res = spi_flashinfo_spansion(fbuf);
+      break;
     case 0x1f: {
         switch (fbuf[1]>> 5) /* Family code*/ {
         case 1:
@@ -1189,6 +1204,7 @@ int ProgAlgSPIFlash::program(BitFile &pfile)
   switch (manf_id) {
   case 0x1f: /* Atmel */
     return program_at45(pfile);
+  case 0x01: /* Spansion */
   case 0x20: /* Numonyx */
   case 0xc2: /* Macronix */
   case 0x30: /* AMIC */
