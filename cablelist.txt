@@ -1,6 +1,7 @@
 # Alias       Type  OptString Max_Freq
 # OptString for ftdi:
-# VID:PID:PRODDESC:INTERFACE:DBUS_DATA:DBUS_EN:CBUS_DAT:ACBUS_EN
+#   VID:PID:PRODDESC:INTERFACE:DBUS_DATA:DBUS_EN:CBUS_DAT:ACBUS_EN
+#   INTERFACE: 0: any, 1: INTERFACE_A, 2: INTERFACE_B, ...
 # OptString for pp: 
 # OptString for xps:  VID:PID
 # Max_Freq == 0 mean use maximum speed of device
