@@ -1,0 +1,62 @@
+This is a simplified readme covering MasOSX aspects of build and use xc3sprog.
+This is not a complete HOWTO, so don't hesitate to read other README's supplied in this project.
+
+1. Compilation environment
+following installations require before proceeding to compile xc3sprog:
+
+- XCode SDK
+downloadable from here
+https://developer.apple.com/xcode/download/
+
+- Homebrew
+downloadable from here
+http://brew.sh/
+
+- SVN
+just type in the terminal
+brew install svn
+
+- CMake
+just type in the terminal
+brew install cmake
+
+- libusb
+just type in the terminal
+brew install libusb
+
+- libftdi
+just type in the terminal
+brew install libftdi
+
+2. Build sequence
+following the original README
+
+- checkout source code using SVN:
+svn co https://xc3sprog.svn.sourceforge.net/svnroot/xc3sprog/trunk xc3sprog
+
+- change folder inside xc3sprog and create subfolder build
+cd xc3sprog
+mkdir build
+
+- change folder inside build and execute cmake (double dots after the 'cmake' is important)
+cd build
+cmake ..
+
+- once cmake discover all the components necessary for the build 
+(require at least libusb and libftdi - proceed with the classical make)
+make
+
+- if the error happened (usually cmake coudn't find libftdi) it means file Findlibftdi.cmake hasn't been patched yet
+(the hint is simple, cmake is looking for ftdi yet it should look for the ftdi1 except for the header)
+
+3. Execution environment
+- useful tool inside the project is detectchain to verify if FTDI actually has any chip connected to JTAG pins
+./detectchain -c ftdi -d /dev/tty.usbserial-fd12
+
+- resolving conflict with the original AppleUSBFTDI driver (aka KEXT:)
+at first trial to connect to the peripherals the error about unable to acquire port will show up
+unload original KEXT from the system and proceed again with the commands no more problems to happend
+
+sudo kextunload -b com.apple.driver.AppleUSBFTDI
+
+
