@@ -17,7 +17,7 @@ if (NOT LIBFTDI_FOUND)
 
     if(NOT WIN32)
         include(FindPkgConfig)
-        pkg_check_modules(LIBFTDI_PKG libftdi)
+        pkg_check_modules(LIBFTDI_PKG libftdi1)
     endif(NOT WIN32)
 
     find_path(LIBFTDI_INCLUDE_DIR
@@ -37,7 +37,7 @@ if (NOT LIBFTDI_FOUND)
 
     find_library(LIBFTDI_LIBRARIES
         NAMES
-            ftdi
+            ftdi ftdi1
         HINTS
             ${LIBFTDI_PKG_LIBRARY_DIRS}
         PATHS
