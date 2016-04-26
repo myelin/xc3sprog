@@ -647,8 +647,9 @@ int BitFile::get_bit(unsigned int idx)
 {
      unsigned int bval, bit;
       bval = idx / 8;
-      if(bval >= length)
-	throw  io_exception(std::string("bit_get_fuse"));
+      /* Because of the clipping
+       we assume bit 1 if idx is beyond the file length. */
+      if(bval >= length) return 1;
       bit  = idx % 8;
       return (buffer[bval] & (1 << bit))? 1 : 0;
 }

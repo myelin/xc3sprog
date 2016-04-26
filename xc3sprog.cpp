@@ -84,8 +84,8 @@ int programXCF(Jtag &jtag, DeviceDB &db, int argc, char **args,
 int programXC95X(Jtag &jtag, unsigned long id, int argc, char **args, 
                  bool verbose, bool erase, const char *device);
 int programXC2C(Jtag &jtag, unsigned int id, int argc, char ** args, 
-                bool verbose, bool erase, const char *mapdir,
-                const char *device);
+                bool verbose, bool erase, bool rUsercode, uint32_t wUsercode,
+                const char *mapdir, const char *device);
 int programSPI(Jtag &jtag, int argc, char ** args, bool verbose, bool erase,
                bool reconfig,  int test_count,
                char *bscanfile,int family, const char *device);
@@ -372,6 +372,8 @@ void usage(bool all_options)
   OPT("-j", "Detect JTAG chain, nothing else (default action).");
   OPT("-l", "Program lockbits if defined in fusefile.");
   OPT("-m <dir>", "Directory with XC2C mapfiles.");
+  OPT("-u", "Read usercode form XC2C devices.");
+  OPT("-U val", "Set usercode when writing a JED file to XC2C devices.");
   OPT("-R", "Try to reconfigure device(No other action!).");
   OPT("-T val", "Test chain 'val' times (0 = forever) or 10000 times"
       " default.");
@@ -640,6 +642,8 @@ int main(int argc, char **args)
   bool     spiflash     = false;
   bool     reconfigure  = false;
   bool     erase        = false;
+  bool     rUsercode    = false;
+  uint32_t wUsercode    = 0xFFFFFFFF;
   bool     use_ftd2xx   = false;
   unsigned int jtag_freq= 0;
   unsigned long id;
@@ -676,7 +680,7 @@ int main(int argc, char **args)
 
   // Start from parsing command line arguments
   while(true) {
-      int c = getopt(argc, args, "?hCLc:d:DeE:F:i:I::jJ:Lm:o:p:Rs:S:T::vX:");
+      int c = getopt(argc, args, "?hCLc:d:DeE:F:i:I::jJ:Lm:o:p:Rs:S:T::uU:vX:");
     switch(c) 
     {
     case -1:
@@ -735,6 +739,14 @@ int main(int argc, char **args)
 
     case 'e':
       erase = true;
+      break;
+
+    case 'u':
+      rUsercode = true;
+      break;
+
+    case 'U':
+      wUsercode = strtoul(optarg, NULL, 0);
       break;
 
     case 'D':
@@ -824,7 +836,7 @@ int main(int argc, char **args)
       dump_lists(&cabledb, &db);
 
   if((argc < 0) || (cablename == 0))  usage(true);
-  if(argc < 1 && !reconfigure && !erase) detectchain = true;
+  if(argc < 1 && !reconfigure && !erase && !rUsercode) detectchain = true;
   if (verbose)
   {
     fprintf(stderr, "Using %s\n", db.getFile().c_str());
@@ -918,8 +930,8 @@ int main(int argc, char **args)
 	}
       else if ((family & 0x7e) == 0x36) /* XC2C */
 	{
-            return programXC2C(jtag, id, argc, args, verbose, erase,
-                               mapdir, db.idToDescription(id));
+            return programXC2C(jtag, id, argc, args, verbose, erase, rUsercode,
+                               wUsercode, mapdir, db.idToDescription(id));
 	}
       else 
 	{
@@ -1412,8 +1424,8 @@ int programXC95X(Jtag &jtag, unsigned long id, int argc, char **args,
 }
 
 int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args, 
-                 bool verbose, bool erase, const char *mapdir,
-                 const char *device)
+                 bool verbose, bool erase, bool rUsercode, uint32_t wUsercode,
+		 const char *mapdir, const char *device)
 {
     int i, ret;
     int size_ind = (id & 0x001f0000)>>16;
@@ -1429,7 +1441,12 @@ int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
     }
     else
         map_available = true;
-    
+
+    if (rUsercode)
+    {
+        ProgAlgXC2C alg(jtag, size_ind);
+        alg.read_usercode();
+    }
     if (erase)
     {
         ProgAlgXC2C alg(jtag, size_ind);
@@ -1498,7 +1515,7 @@ int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
                     fprintf(stderr, "Probably no JEDEC File, aborting\n");
                 else
                     /*FIXME ret = */
-                    map.jedecfile2bitfile(&fuses, &file);
+                    map.jedecfile2bitfile(wUsercode, &fuses, &file);
             }
             else 
             {

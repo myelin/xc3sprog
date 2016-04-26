@@ -159,7 +159,7 @@ int main(int argc, char**args)
     }
   else
     {
-      map.jedecfile2bitfile(&fuses, &bits);
+      map.jedecfile2bitfile(0xFFFFFFFF, &fuses, &bits);
       bits.saveAs(out_style, device, fp);
      }
   return 0; 

@@ -17,7 +17,7 @@ class MapFile_XC2C
   MapFile_XC2C(void);
   ~MapFile_XC2C(void);
   int loadmapfile(const char *mapdir, const char *mapfile);
-  void jedecfile2bitfile(JedecFile *fuses, BitFile  *bits);
+  void jedecfile2bitfile(uint32_t usercode, JedecFile *fuses, BitFile  *bits);
   void bitfile2jedecfile(BitFile  *bits, JedecFile *fuses);
   const char *GetFilename(){return (mapfilename)?mapfilename:"";};
 };

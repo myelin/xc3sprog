@@ -127,7 +127,10 @@ ProgAlgXC2C::ProgAlgXC2C(Jtag &j, int size_ind)
       fprintf(stderr,"Unknown size %d for XC2c\n", size_ind);
       exit(5);
     }
-	
+
+  /* there are two extra rows for security/done and usercode bits*/
+  block_num += 2;
+
   jtag=&j;
 }
 
@@ -256,7 +259,8 @@ int ProgAlgXC2C::array_verify(BitFile &file)
   jtag->shiftIR(&ISC_READ, ircap);
   a_data[0] = reverse_gray_code_table[0]>>(8-post);
   jtag->shiftDR(a_data, NULL, post);
-  for (i=1; i<=block_num; i++)
+  /* Do not verify the Program Done and Usercode Row. */
+  for (i=1; i<=block_num-2; i++)
     {
       fprintf(stderr, "                                        \r"
 	      "Verify: Row %3d", i);
@@ -296,19 +300,8 @@ void ProgAlgXC2C::done_program(void)
   byte preamble[1]={0};
   byte ircap[1];
 
-  /* Program Done Bits */
-  jtag->shiftIR(&ISC_ENABLE_OTF);
-  jtag->shiftIR(&ISC_PROGRAM, ircap);
-  memset(i_data, 0 , MAXSIZE);
-  jtag->shiftDR(i_data, NULL, block_size-12, 0, false); 
-  i_data[0] = (block_size == 274)? 0xf7: 0xfb;/* XC2c64 has no transfer bits */
-  i_data[1] = 0x0f;
-  jtag->shiftDR(i_data, NULL, 12, 0, false);
-  a_data[0] = reverse_gray_code_table[block_num]>>(8-post);
-  jtag->shiftDR(a_data, preamble, post);
-  jtag->Usleep(10000);
-  jtag->shiftIR(&ISC_DISABLE, ircap);
-  
+  /* Program Done Bits are yet in BitFile like the usercode too. */
+
   jtag->shiftIR(&ISC_ENABLE_OTF);
   jtag->shiftIR(&ISC_INIT);
   jtag->Usleep(20);
@@ -355,4 +348,15 @@ void ProgAlgXC2C::array_read(BitFile &rbfile)
    }
   jtag->shiftIR(&ISC_DISABLE);
 
+}
+
+void ProgAlgXC2C::read_usercode(void)
+{
+  byte o_data[4];
+  jtag->shiftIR(&ISC_ENABLE_OTF);
+  jtag->shiftIR(&USERCODE);
+  jtag->shiftDR(NULL, o_data, 32);
+  printf("Usercode: 0x%02X%02X%02X%02X\n",
+    o_data[3],o_data[2],o_data[1],o_data[0]);
+  jtag->shiftIR(&ISC_DISABLE);
 }
