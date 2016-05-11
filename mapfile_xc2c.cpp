@@ -200,12 +200,13 @@ void MapFile_XC2C::jedecfile2bitfile(uint32_t usercode, JedecFile *fuses, BitFil
 	  switch(fuse_idx)
 	    {
 	      case MAP_ZERO:
+	      case MAP_DONE+1:
 	        fuse = 0;
 		break;
 	      case MAP_ONE:
 	      case MAP_SPARE:
 	      case MAP_SEC ... MAP_SEC+6:
-	      case MAP_DONE ... MAP_DONE+1:
+	      case MAP_DONE:
 	        fuse = 1;
 		break;
 	      case MAP_USER ... MAP_USER+31:
