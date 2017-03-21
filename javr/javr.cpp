@@ -265,7 +265,7 @@ int main(int argc, char **args)
     }
 
   // Produce release info from CVS tags
-  printf("Release $Rev$\nPlease provide feedback on success/failure/enhancement requests! Check Sourceforge SVN!\n");
+  printf("Release $Rev: 764 $\nPlease provide feedback on success/failure/enhancement requests! Check Sourceforge SVN!\n");
 
   CableDB cabledb(0);
   res = cabledb.getCable(cablename, &cable);

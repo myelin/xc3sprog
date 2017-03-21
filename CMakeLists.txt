@@ -23,6 +23,11 @@ option(USE_FTD2XX "Use FTDI libFTD2XX instead of free libftdi" ON)
 pkg_check_modules(LIBFTDI REQUIRED libftdi1)
 include_directories(${LIBFTDI_INCLUDE_DIRS})
 
+find_package(libjaylink)
+if(LIBJAYLINK_FOUND)
+  include_directories(${LIBJAYLINK_INCLUDE_DIR})
+endif(LIBJAYLINK_FOUND)
+
 if(USE_FTD2XX)
   find_package(libFTD2XX)
 endif(USE_FTD2XX)
@@ -140,20 +145,21 @@ add_library(xc3sproglib  STATIC ioftdi.cpp iofx2.cpp
 			progalgavr.cpp progalgxc2c.cpp  mapfile_xc2c.cpp
 			ioxpc.cpp progalgspiflash.cpp bitrev.cpp
                         cabledb.cpp pdioverjtag.cpp xmega_pdi_nvm.cpp
+                        iojlink.cpp
                         ${CONDITIONAL_FILES} devices.h cables.h)
 
 add_executable(xc2c_warp xc2c_warp.cpp)
 target_link_libraries(xc2c_warp xc3sproglib ${CONDITIONAL_LIBS})
 
 add_executable(detectchain detectchain.cpp cables.h devices.h)
-target_link_libraries(detectchain xc3sproglib ${LIBFTDI_LIBRARIES} ${LIBFTD2XX_LIBRARIES} ${CONDITIONAL_LIBS})
+target_link_libraries(detectchain xc3sproglib ${LIBFTDI_LIBRARIES} ${LIBFTD2XX_LIBRARIES} ${LIBJAYLINK_LIBRARIES} ${CONDITIONAL_LIBS})
 
 add_executable(xc3sprog xc3sprog.cpp javr.cpp srecfile.cpp progalgavr.cpp
 			devices.h)
-target_link_libraries(xc3sprog xc3sproglib ${LIBFTDI_LIBRARIES}  ${LIBFTD2XX_LIBRARIES} ${CONDITIONAL_LIBS}  )
+target_link_libraries(xc3sprog xc3sproglib ${LIBFTDI_LIBRARIES}  ${LIBFTD2XX_LIBRARIES} ${LIBJAYLINK_LIBRARIES} ${CONDITIONAL_LIBS}  )
 
 add_executable(readdna readdna.cpp devices.h)
-target_link_libraries(readdna xc3sproglib ${LIBFTDI_LIBRARIES}  ${LIBFTD2XX_LIBRARIES} ${CONDITIONAL_LIBS}  )
+target_link_libraries(readdna xc3sproglib ${LIBFTDI_LIBRARIES}  ${LIBFTD2XX_LIBRARIES} ${LIBJAYLINK_LIBRARIES} ${CONDITIONAL_LIBS}  )
 
 add_subdirectory(javr)
 

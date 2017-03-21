@@ -10,6 +10,7 @@
 #include "ioparport.h"
 #include "iofx2.h"
 #include "ioftdi.h"
+#include "iojlink.h"
 #include "ioxpc.h"
 #include "utilities.h"
 
@@ -81,6 +82,12 @@ int  getIO( std::auto_ptr<IOBase> *io, struct cable_t * cable, char const *dev,
   else if(cable->cabletype == CABLE_XPC)
   {
       io->reset(new IOXPC());
+      io->get()->setVerbose(verbose);
+      res = io->get()->Init(cable, serial, use_freq);
+  }
+  else if(cable->cabletype == CABLE_JLINK)
+  {
+      io->reset(new IOJLink());
       io->get()->setVerbose(verbose);
       res = io->get()->Init(cable, serial, use_freq);
   }

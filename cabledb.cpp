@@ -155,6 +155,8 @@ CABLES_TYPES CableDB::getCableType(const char *given_name)
     return CABLE_FX2;
   if (strcasecmp(given_name, "xpc") == 0)
     return CABLE_XPC;
+  if (strcasecmp(given_name, "jlink") == 0)
+    return CABLE_JLINK;
   return CABLE_UNKNOWN;
 }
 
