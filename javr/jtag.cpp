@@ -17,7 +17,7 @@ static void   BitArraytoByteArray(const char * Data, unsigned char *bData, int S
   if (debug& UL_FUNCTIONS)
     fprintf(stderr, "BitArraytoByteArray Size %2d  ", Size);
   if (debug& UL_DETAILS) {
-    
+
     if (Size < 17) {
       for (i=Size-1; i>=0; i--)
 	fprintf(stderr, "%c",(Data[i]=='1')?'1':'0');
@@ -131,7 +131,7 @@ void Send_Data_Output(int Size, char *Data, char *Output)
 
   bData   = (unsigned char*) malloc(bSize*sizeof(unsigned char));
   bOutput = (unsigned char*) malloc(bSize*sizeof(unsigned char));
-  
+
   if (!bData || !bOutput) {
     fprintf(stderr,"Send_Data_Output: malloc failed\n");
     if(bData) free(bData);
@@ -172,7 +172,7 @@ void ResetAVR(void)
 
   fprintf(stderr,"ResetAVR(new)\n");
   Send_Instruction(4,AVR_RESET);
-  avr_j->shiftDR(x,0,1,0,1); 
+  avr_j->shiftDR(x,0,1,0,1);
 }
 
 /********************************************************************\
@@ -186,7 +186,7 @@ void ResetReleaseAVR(void)
 
   fprintf(stderr,"ResetReleaseAVR(new)\n");
   Send_Instruction(4,AVR_RESET);
-  avr_j->shiftDR(x,0,1,0,1); 
+  avr_j->shiftDR(x,0,1,0,1);
 }
 
 

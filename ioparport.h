@@ -1,7 +1,7 @@
 /* JTAG GNU/Linux parport device io
 
 Copyright (C) 2004 Andrew Rogers
-Additions (C) 2005-2011  Uwe Bonnes 
+Additions (C) 2005-2011  Uwe Bonnes
                          bon@elektron.ikp.physik.tu-darmstadt.de
 
 This program is free software; you can redistribute it and/or modify

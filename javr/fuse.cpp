@@ -50,47 +50,47 @@
 #include "fuse.h"
 #undef FUSE_M
 
-/*     M128   M323   M16    M162   M169P   CAN128 USB1287 M640    
- *     M64           M32           M169A                  M1280   
- *                                 M329                   M1281   
- *                                 M3290                  M2560   
- *                                 M649                   M2560   
- *                                 M6490                          
- * E7  ------ ------ ------ ------ ------- ------ ------  ------  
- * E6  ------ ------ ------ ------ ------- ------ ------  ------  
- * E5  ------ ------ ------ ------ ------- ------ ------  ------  
- * E4  ------ ------ ------ M161C  ------- ------ ------  ------  
- * E3  -----  -----  -----  BODL2  BODL2   BODL2  HWBE    -----   
- * E2  -----  -----  -----  BODL0  BODL0   BODL0  BODL2   BODL2   
- * E1  M103C  -----  -----  BODL1  BODL1   BODL1  BODL0   BODL0   
- * E0  WDTON  -----  -----  ------ RSTDIS  TA0SEL BODL1   BODL1   
- *                                                                
-** H7  OCDEN  OCDEN  OCDEN  OCDEN  OCDEN   OCDEN  OCDEN   OCDEN   
-** H6  JTAGEN JTAGEN JTAGEN JTAGEN JTAGEN  JTAGEN JTAGEN  JTAGEN  
-** H5  SPIEN  SPIEN  SPIEN  SPIEN  SPIEN   SPIEN  SPIEN   SPIEN   
- * H4  CKOPT  -----  CKOPT  WDTON  WDTON   WDTON  WDTON   WDTON   
-** H3  EESAVE EESAVE EESAVE EESAVE EESAVEE EESAVE EESAVE  EESAVE  
-** H2  BOOTS1 BOOTS1 BOOTS1 BOOTS1 BOOTS11 BOOTS1 BOOTS1  BOOTS1  
-** H1  BOOTS0 BOOTS0 BOOTS0 BOOTS0 BOOTS00 BOOTS0 BOOTS0  BOOTS0  
-** H0  BOOTRS BOOTRS BOOTRS BOOTRS BOOTRSS BOOTRS BOOTRS  BOOTRS  
- *                                                                
- * L7  BODLVL BODLVL BODLVL CKDIV8 CKDIV8L CKDIV8 CKDIV8  CKDIV8  
- * L6  BODEN  BODEN  BODEN  CKOUT  CKOUT   CKOUT  CKOUT   CKOUT   
- * L5  SUT1   ----   SUT1   SUT1   SUT1    SUT1   SUT1    SUT1    
- * L4  SUT0   ----   SUT0   SUT0   SUT0    SUT0   SUT0    SUT0    
-** L3  CKSEL3 CKSEL3 CKSEL3 CKSEL3 CKSEL33 CKSEL3 CKSEL3  CKSEL3  
-** L2  CKSEL2 CKSEL2 CKSEL2 CKSEL2 CKSEL22 CKSEL2 CKSEL2  CKSEL2  
-** L1  CKSEL1 CKSEL1 CKSEL1 CKSEL1 CKSEL11 CKSEL1 CKSEL1  CKSEL1  
-** L0  CKSEL0 CKSEL0 CKSEL0 CKSEL0 CKSEL00 CKSEL0 CKSEL0  CKSEL0  
- *                                                                
- * LO7 ----   ----   ----   -----  ------  -----  -----   -----   
- * LO6 ----   ----   ----   -----  ------  -----  -----   -----   
- * LO5 LB12   LB12   LB12   BLB12  BBLB12  BLB12  BLB12   BLB12   
- * LO4 LB11   LB11   LB11   BLB11  BBLB11  BLB11  BLB11   BLB11   
- * LO3 LB02   LB02   LB02   BLB02  BBLB02  BLB02  BLB02   BLB02   
- * LO2 LB01   LB01   LB01   BLB01  BBLB01  BLB01  BLB01   BLB01   
- * LO1 B1     B1     B1     LB1    LLB1    LB1    LB1     LB1     
- * LO0 B1     B1     B1     LB1    LLB1    LB1    LB1     LB1     
+/*     M128   M323   M16    M162   M169P   CAN128 USB1287 M640
+ *     M64           M32           M169A                  M1280
+ *                                 M329                   M1281
+ *                                 M3290                  M2560
+ *                                 M649                   M2560
+ *                                 M6490
+ * E7  ------ ------ ------ ------ ------- ------ ------  ------
+ * E6  ------ ------ ------ ------ ------- ------ ------  ------
+ * E5  ------ ------ ------ ------ ------- ------ ------  ------
+ * E4  ------ ------ ------ M161C  ------- ------ ------  ------
+ * E3  -----  -----  -----  BODL2  BODL2   BODL2  HWBE    -----
+ * E2  -----  -----  -----  BODL0  BODL0   BODL0  BODL2   BODL2
+ * E1  M103C  -----  -----  BODL1  BODL1   BODL1  BODL0   BODL0
+ * E0  WDTON  -----  -----  ------ RSTDIS  TA0SEL BODL1   BODL1
+ *
+** H7  OCDEN  OCDEN  OCDEN  OCDEN  OCDEN   OCDEN  OCDEN   OCDEN
+** H6  JTAGEN JTAGEN JTAGEN JTAGEN JTAGEN  JTAGEN JTAGEN  JTAGEN
+** H5  SPIEN  SPIEN  SPIEN  SPIEN  SPIEN   SPIEN  SPIEN   SPIEN
+ * H4  CKOPT  -----  CKOPT  WDTON  WDTON   WDTON  WDTON   WDTON
+** H3  EESAVE EESAVE EESAVE EESAVE EESAVEE EESAVE EESAVE  EESAVE
+** H2  BOOTS1 BOOTS1 BOOTS1 BOOTS1 BOOTS11 BOOTS1 BOOTS1  BOOTS1
+** H1  BOOTS0 BOOTS0 BOOTS0 BOOTS0 BOOTS00 BOOTS0 BOOTS0  BOOTS0
+** H0  BOOTRS BOOTRS BOOTRS BOOTRS BOOTRSS BOOTRS BOOTRS  BOOTRS
+ *
+ * L7  BODLVL BODLVL BODLVL CKDIV8 CKDIV8L CKDIV8 CKDIV8  CKDIV8
+ * L6  BODEN  BODEN  BODEN  CKOUT  CKOUT   CKOUT  CKOUT   CKOUT
+ * L5  SUT1   ----   SUT1   SUT1   SUT1    SUT1   SUT1    SUT1
+ * L4  SUT0   ----   SUT0   SUT0   SUT0    SUT0   SUT0    SUT0
+** L3  CKSEL3 CKSEL3 CKSEL3 CKSEL3 CKSEL33 CKSEL3 CKSEL3  CKSEL3
+** L2  CKSEL2 CKSEL2 CKSEL2 CKSEL2 CKSEL22 CKSEL2 CKSEL2  CKSEL2
+** L1  CKSEL1 CKSEL1 CKSEL1 CKSEL1 CKSEL11 CKSEL1 CKSEL1  CKSEL1
+** L0  CKSEL0 CKSEL0 CKSEL0 CKSEL0 CKSEL00 CKSEL0 CKSEL0  CKSEL0
+ *
+ * LO7 ----   ----   ----   -----  ------  -----  -----   -----
+ * LO6 ----   ----   ----   -----  ------  -----  -----   -----
+ * LO5 LB12   LB12   LB12   BLB12  BBLB12  BLB12  BLB12   BLB12
+ * LO4 LB11   LB11   LB11   BLB11  BBLB11  BLB11  BLB11   BLB11
+ * LO3 LB02   LB02   LB02   BLB02  BBLB02  BLB02  BLB02   BLB02
+ * LO2 LB01   LB01   LB01   BLB01  BBLB01  BLB01  BLB01   BLB01
+ * LO1 B1     B1     B1     LB1    LLB1    LB1    LB1     LB1
+ * LO0 B1     B1     B1     LB1    LLB1    LB1    LB1     LB1
  *
  *
  * Brownout Levels
@@ -98,14 +98,14 @@
  * ATMEGA32    3.6/4.0/4.2 2.5/2.7/2.9
  * ATMEGA16    3.6/4.0/4.5 2.5/2.7/3.2
  * ATMEGA64    3.7/4.0/4.5 2.4/2.6/2.9
- * ATMEAG128 
+ * ATMEAG128
  * ATMEGA162   RES         RES         RES        2.1/2.3/2.5 4.1/4.3/4.5 2.5/2.7/2.9 1.7/1.8/2.0 disabled
  * ATMEGA169   RES         RES         reserved   reserved    4.1/4.3/4.5 2.5/2.7/2.9 1.7/1.8/2.0 disabled
- * ATMEGA169A 
- * ATMEGA329 
- * ATMEGA3290 
+ * ATMEGA169A
+ * ATMEGA329
+ * ATMEGA3290
  * ATMEGA649
- * ATMEGA6490 
+ * ATMEGA6490
  * AT90CAN128      2.5         2.6         2.7         3.8         3.9         4.0         4.1     disabled
  * AT90CAN32       2.5         2.6         2.7         3.8         3.9         4.0         4.1     disabled
  * AT90CAN64       2.5         2.6         2.7         3.8         3.9         4.0         4.1     disabled
@@ -154,7 +154,7 @@ void DecodeATMegaFuseBits(void)
   case AT90CAN32:
   case AT90CAN64:
   case AT90CAN128:
-      gFuseBitsAll.BODLEVEL =     (gFuseByte[2]>>1)&0x07;     
+      gFuseBitsAll.BODLEVEL =     (gFuseByte[2]>>1)&0x07;
       gFuseBitsAll.TA0SEL   = BVAL(gFuseByte[2],0);
       break;
   case AT90USB1287:
@@ -184,7 +184,7 @@ void DecodeATMegaFuseBits(void)
       gFuseBitsAll.BODLEVEL = BVAL(gFuseByte[0],7);
       gFuseBitsAll.BODEN    = BVAL(gFuseByte[0],6);
       break;
-      
+
   case ATMEGA162:
   case ATMEGA169:
   case ATMEGA329:
@@ -267,7 +267,7 @@ void EncodeATMegaFuseBits(void)
   case UNKNOWN_DEVICE:
       break;
   }
-  
+
   tmp  = (gFuseBitsAll.OCDEN    << 7);
   tmp |= (gFuseBitsAll.JTAGEN   << 6);
   tmp |= (gFuseBitsAll.SPIEN    << 5);
@@ -275,7 +275,7 @@ void EncodeATMegaFuseBits(void)
   tmp |= (gFuseBitsAll.EESAVE   << 3);
   tmp |= (gFuseBitsAll.BOOTRST  <<0);
   tmp |= (gFuseBitsAll.BOOTSIZE <<1);
-  
+
   switch(gDeviceData.Index)
   {
   case ATMEGA16:
@@ -291,7 +291,7 @@ void EncodeATMegaFuseBits(void)
   case ATMEGA162:
   case ATMEGA169:
   case AT90CAN128:
-  case AT90USB1287: 
+  case AT90USB1287:
   case ATMEGA640:
   case ATMEGA1280:
   case ATMEGA1281:
@@ -664,13 +664,13 @@ void WriteATMegaFuse(void)
       tmp=0x1300;
       tmp|=gFuseByte[2];
       Send_AVR_Prog_Command(tmp);
-      
-      
+
+
       Send_AVR_Prog_Command(0x3B00);  /* Write Extended Fuse Byte */
       Send_AVR_Prog_Command(0x3900);
       Send_AVR_Prog_Command(0x3B00);
       Send_AVR_Prog_Command(0x3B00);
-      
+
       timeout=1000;
       do
       {
@@ -765,7 +765,7 @@ void WriteATMegaFuseFile(char *name)
   default:
       fprintf(fp,"Ext 0x%02x ", gFuseByte[2]);
   }
-  fprintf(fp,"High 0x%02x Low 0x%02x Lock 0x%02x" EOLINE, 
+  fprintf(fp,"High 0x%02x Low 0x%02x Lock 0x%02x" EOLINE,
           gFuseByte[1], gFuseByte[0], gLockByte);
   switch(gDeviceData.Index)
   {
@@ -865,7 +865,7 @@ void WriteATMegaFuseFile(char *name)
   case UNKNOWN_DEVICE:
       break;
   }
-      
+
   fprintf(fp,"; Lock Bit definitions (Need -L command line option to write)" EOLINE);
   fprintf(fp,"BLB1: %d" EOLINE,gLockBitsAll.BLB1);
   fprintf(fp,"BLB0: %d" EOLINE,gLockBitsAll.BLB0);

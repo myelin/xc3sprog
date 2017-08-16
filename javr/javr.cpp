@@ -129,7 +129,7 @@ int main(int argc, char **args)
     switch(getopt(argc, args, "?hJ:Lc:Cd:e:f:jp:s:v")) {
     case -1:
       goto args_done;
-      
+
     case 'v':
       verbose = true;
       break;
@@ -173,7 +173,7 @@ int main(int argc, char **args)
     case 's':
       serial = optarg;
       break;
-      
+
 
     case '?':
     case 'h':
@@ -190,7 +190,7 @@ int main(int argc, char **args)
   //printf("argc: %d\n", argc);
   if(argc < 0)  usage();
   AllocateFlashBuffer();
-  if(argc == 0) 
+  if(argc == 0)
     gDisplayMenu=1;
   else
     {
@@ -233,12 +233,12 @@ int main(int argc, char **args)
 
       if (!gFuseName)
 	gFuseName=DefName;
-      
+
      if(!eepromfile)
 	eepromfile= DefName;
      else
          gFuseBitsAll.EESAVE = 1;
-      
+
       strncpy(fname, eepromfile, 250);
       fp = fopen(fname,"rb");
       if(fp==NULL)
@@ -263,7 +263,7 @@ int main(int argc, char **args)
 	    printf("0 Bytes Eeprom Data\n");
 	}
     }
-  
+
   // Produce release info from CVS tags
   printf("Release $Rev$\nPlease provide feedback on success/failure/enhancement requests! Check Sourceforge SVN!\n");
 
@@ -276,7 +276,7 @@ int main(int argc, char **args)
       else usage();
     }
   io.get()->setVerbose(verbose);
-  
+
   Jtag jtag = Jtag(io.operator->());
   if (verbose)
     fprintf(stderr, "Using %s\n", db.getFile().c_str());
@@ -290,7 +290,7 @@ int main(int argc, char **args)
     if(length>0){
       jtag.setDeviceIRLength(i,length);
       printf(" Desc: %15s IR length: %d\n",db.idToDescription(id),length);
-    } 
+    }
     else{
       printf("not found in '%s'.\n", db.getFile().c_str());
     }
@@ -370,7 +370,7 @@ int main(int argc, char **args)
 	  WriteATMegaFuse();
         }
       else
-          printf("\n%s or %s.fus is not a valid fuse file\n", 
+          printf("\n%s or %s.fus is not a valid fuse file\n",
                  gFuseName, gFuseName);
     }
   else

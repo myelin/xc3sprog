@@ -49,7 +49,7 @@ int main(int argc, char**args)
 	  usage();
 	}
       break;
-      
+
     case 'o':
       if (BitFile::styleFromString(optarg, &out_style))
 	{
@@ -57,15 +57,15 @@ int main(int argc, char**args)
 	  usage();
 	}
       break;
-      
+
     case 'm':
       mapdir = optarg;
       break;
- 
+
     case 'O':
       outfile = optarg;
       break;
-      
+
     case '?':
     case 'h':
     default:
@@ -87,16 +87,16 @@ int main(int argc, char**args)
       fp=fopen(args[0],"rb");
       if(!fp)
 	{
-	  fprintf(stderr, "Can't open datafile %s: %s\n", args[0], 
+	  fprintf(stderr, "Can't open datafile %s: %s\n", args[0],
 		  strerror(errno));
 	  return 1;
 	}
     }
-  
+
   if (fuses.readFile(fp) == 0)
     {
       if (verbose)
-	fprintf(stderr,"Jedecfile %s for %s: %d Fuses, Checksum: 0x%04x\n", 
+	fprintf(stderr,"Jedecfile %s for %s: %d Fuses, Checksum: 0x%04x\n",
 		args[0], fuses.getDevice(), fuses.getLength(),
 		fuses.getChecksum());
       strncpy(device, fuses.getDevice(), 255);
@@ -110,7 +110,7 @@ int main(int argc, char**args)
 	  fp=fopen(args[0],"rb");
 	  if(!fp)
 	    {
-	      fprintf(stderr, "Can't open datafile %s: %s\n", args[0], 
+	      fprintf(stderr, "Can't open datafile %s: %s\n", args[0],
 		  strerror(errno));
 	      return 1;
 	    }
@@ -118,12 +118,12 @@ int main(int argc, char**args)
       if (bits.readFile(fp, in_style) == 0 )
 	{
 	  if (verbose)
-	    fprintf(stderr,"Got Bitfile for Device %s: %d Fuses\n", 
+	    fprintf(stderr,"Got Bitfile for Device %s: %d Fuses\n",
 		    bits.getPartName(), bits.getLength());
 	  revert = true;
 	  strncpy(device, bits.getPartName(), 255);
 	}
-      
+
       else
 	{
 	  fprintf(stderr, "File %s not recognized as Bit- or Jedecfile\n",
@@ -162,6 +162,6 @@ int main(int argc, char**args)
       map.jedecfile2bitfile(0xFFFFFFFF, &fuses, &bits);
       bits.saveAs(out_style, device, fp);
      }
-  return 0; 
+  return 0;
 }
-     
+

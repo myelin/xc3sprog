@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 /*
  * Using a slightly corrected version from IPAL libjedec
  * Copyright (c) 2000 Stephen Williams (steve@icarus.com)
- */ 
+ */
 
 #include <stdlib.h>
 #include <string.h>
@@ -95,16 +95,16 @@ char m_N_strings[MAX_ITEM][MAX_SIZE];
 
 static void m_startup(int ch, struct state_mach*m)
 {
-  switch (ch) 
+  switch (ch)
     {
     case '\002':
       m->state = m_base;
       break;
-      
+
     case 'D':
       m->state = m_header;
       break;
-      
+
     default:
       break;
     }
@@ -112,7 +112,7 @@ static void m_startup(int ch, struct state_mach*m)
 
 static void m_header(int ch, struct state_mach*m)
 {
-     switch (ch) 
+     switch (ch)
        {
        case '\n':
        case '\r':
@@ -184,7 +184,7 @@ static void m_C(int ch, struct state_mach*m)
       fprintf(stderr, "m_C: Dangling '%c' 0x%02x\n", ch, ch);
       fflush(stderr);
       throw  io_exception(std::string("m_C"));
- }  
+ }
 static void m_L(int ch, struct state_mach*m)
 {
       if (isdigit(ch)) {
@@ -274,7 +274,7 @@ static void m_N(int ch, struct state_mach*m)
       case '\n':
       case '\r':
 	  break;
-	  
+
       default:
 	if((m_N_item >=0) && (m_N_item <MAX_ITEM) && (m_N_pos < MAX_SIZE-1))
 	  m_N_strings[m_N_item][m_N_pos] = ch;
@@ -359,7 +359,7 @@ static void m_skip(int ch, struct state_mach*m)
       }
 }
 JedecFile::JedecFile(void)
-  : Error(false), logfile(stderr) 
+  : Error(false), logfile(stderr)
 {
   jed.checksum = 0;
   jed.fuse_count = 0;
@@ -381,9 +381,9 @@ int JedecFile::readFile(FILE *fp)
   int ch;
   struct state_mach m;
 
-  if(!fp) 
+  if(!fp)
     return 1;
-  
+
   //jed = (jedec_data_t)calloc(1, sizeof(struct jedec_data));
   m.jed = &jed;
   m.state = m_startup;
@@ -423,15 +423,15 @@ void JedecFile::saveAsJed(const char  *device, FILE *fp)
   else if (strnicmp("XC95144",device, sizeof("XC95288X")-1) == 0)
     {
       type = JED_XC95;
-   } 
+   }
   else if (strnicmp("XC95216",device, sizeof("XC95288X")-1) == 0)
     {
       type = JED_XC95;
-    } 
+    }
   else if (strnicmp("XC95288",device, sizeof("XC95288X")-1) == 0)
     {
       type = JED_XC95;
-    } 
+    }
   else if (strnicmp("XC9536X",device, sizeof("XC9536X")-1) == 0)
     {
       type = JED_XC95X;
@@ -451,11 +451,11 @@ void JedecFile::saveAsJed(const char  *device, FILE *fp)
     {
       type = JED_XC95X;
       DRegLength=16;
-    } 
+    }
   else if (strnicmp("XC2C",device, sizeof("XC2C")-1) == 0)
     {
       type = JED_XC2C;
-    } 
+    }
 
   if (strlen(jed.date) == 0)
     {
@@ -481,12 +481,12 @@ void JedecFile::saveAsJed(const char  *device, FILE *fp)
 
    if(type == JED_XC95X)
     {
-      /* Xilinx Impact (10.1) needs following additional items 
+      /* Xilinx Impact (10.1) needs following additional items
 	 to recognizes as a valid Jedec File
        * the 4 Digits as total Checksum
        * N DEVICE
        */
- 
+
      for (i=0; i<jed.fuse_count; i++)
 	{
 	  if(!w && !b)
@@ -501,7 +501,7 @@ void JedecFile::saveAsJed(const char  *device, FILE *fp)
 	      else
 		b++;
 	    }
-	  else 
+	  else
 	    {
 	      if (b == 5)
 		b = 0;
@@ -592,7 +592,7 @@ unsigned short JedecFile::calcChecksum()
 {
   unsigned int i;
   unsigned short cc=0;
-  
+
   for(i=0; i<(jed.fuse_count/8 + ((jed.fuse_count%8)?1:0)); i++)
     cc += jed.fuse_list[i];
   return cc;

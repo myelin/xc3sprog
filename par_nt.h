@@ -1,12 +1,12 @@
 /* NT Parport Access stuff - Matthew Duggan (2002) */
 
-/* 
- * ParallelVdm Device (0x2C) is mostly undocumented, used by VDM for parallel 
+/*
+ * ParallelVdm Device (0x2C) is mostly undocumented, used by VDM for parallel
  * port compatibility.
  */
 
-/* 
- * Different from CTL_CODE in DDK, limited to ParallelVdm but makes this 
+/*
+ * Different from CTL_CODE in DDK, limited to ParallelVdm but makes this
  * code cleaner.
  */
 

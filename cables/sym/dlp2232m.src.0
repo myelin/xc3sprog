@@ -43,9 +43,9 @@ numslots=0
 # style can be (line,dot,clk,dotclk,none). none if only want to add a net
 # posit. can be (l,r,t,b) or empty for nets
 # net specifies the name of the Vcc or GND name
-# label represents the pinlabel. 
-#	negation lines can be added with _Q_ 
+# label represents the pinlabel.
+#	negation lines can be added with _Q_
 #	if you want to add a "_" or "\" use "\_" and "\\" as escape sequences
 #-----------------------------------------------------
-#pinnr	seq	type	style	posit.	net	label	
+#pinnr	seq	type	style	posit.	net	label
 #-----------------------------------------------------

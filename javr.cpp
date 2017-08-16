@@ -2,7 +2,7 @@
 
 #include "javr.h"
 
-int jAVR(Jtag &jtag, unsigned int id, char * flashfile, bool verify, bool lock, 
+int jAVR(Jtag &jtag, unsigned int id, char * flashfile, bool verify, bool lock,
 	const char * eepromfile, const char * fusefile)
 {
   /*bool menu = (!flashfile && !eepromfile && !fusefile);*/
@@ -27,14 +27,14 @@ int jAVR(Jtag &jtag, unsigned int id, char * flashfile, bool verify, bool lock,
       fprintf(stderr, "Unknown device\n");
       return 1;
   }
-  fprintf(stderr, "%s, Rev %c with",gDeviceData.name,((id>>28) & 0xf)+'A'); 
+  fprintf(stderr, "%s, Rev %c with",gDeviceData.name,((id>>28) & 0xf)+'A');
   fprintf(stderr, " %ldK Flash, %u Bytes EEPROM and %u Bytes RAM\r\n",
 	  gDeviceData.flash/1024,
 	 gDeviceData.eeprom, gDeviceData.ram);
-  
+
   ProgAlgAVR alg (jtag, gDeviceData.fp_size);
 
-  
+
   if (fusefile)
     {
       //EncodeATMegaFuseBits();
@@ -60,7 +60,7 @@ int jAVR(Jtag &jtag, unsigned int id, char * flashfile, bool verify, bool lock,
       fprintf(stderr, "EEPROM at 0xff0:");
       for (i=0; i<16; i++)
 	fprintf(stderr, " %02x ", eeprom[i]);
-      fprintf(stderr, "\n");	
+      fprintf(stderr, "\n");
     }
 
   if (flashfile)
@@ -122,7 +122,7 @@ int jAVR(Jtag &jtag, unsigned int id, char * flashfile, bool verify, bool lock,
 			}
 		    }
 		}
-	      if (count >10) 
+	      if (count >10)
 		return 1;
 	    }
 	  if(count)
@@ -148,7 +148,7 @@ int jAVR(Jtag &jtag, unsigned int id, char * flashfile, bool verify, bool lock,
 	      fprintf(stderr, " File doesn't start at Page Border, aborting\n");
 	      goto bailout;
 	    }
-	  for (i= file.getStart(); i < file.getLength()-gDeviceData.fp_size; 
+	  for (i= file.getStart(); i < file.getLength()-gDeviceData.fp_size;
 	       i += gDeviceData.fp_size)
 	    {
 	      fprintf(stdout, "\rWriting page %4d/%4d", i/gDeviceData.fp_size,
@@ -165,7 +165,7 @@ int jAVR(Jtag &jtag, unsigned int id, char * flashfile, bool verify, bool lock,
 	  if (i != file.getLength())
 	    {
 	      byte *buffer = new byte[gDeviceData.fp_size];
-	      memcpy(buffer, file.getData()+i,file.getLength() -i); 
+	      memcpy(buffer, file.getData()+i,file.getLength() -i);
 	      memset(buffer + (file.getLength() -i), FILL_BYTE,
 		     gDeviceData.fp_size- (file.getLength() -i));
 	      if (alg.pagewrite_flash(i, buffer, gDeviceData.fp_size))
@@ -177,15 +177,15 @@ int jAVR(Jtag &jtag, unsigned int id, char * flashfile, bool verify, bool lock,
 	      else
 		{
 		  fprintf(stdout, "\rWriting page %4d/%4d",
-			  i/gDeviceData.fp_size, 
+			  i/gDeviceData.fp_size,
 			  file.getEnd()/gDeviceData.fp_size);
 		  fflush(stderr);
 		}
 	    }
 	  fprintf(stderr, "         done.\n"
-		  "Bytes from 0x%05x to 0x%05x filled with 0x%02x\n", 
+		  "Bytes from 0x%05x to 0x%05x filled with 0x%02x\n",
 		 file.getEnd(), i+gDeviceData.fp_size -1, FILL_BYTE);
-	  
+
 	}
     }
   return 0;

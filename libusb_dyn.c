@@ -31,26 +31,26 @@
 
 typedef usb_dev_handle * (*usb_open_t)(struct usb_device *dev);
 typedef int (*usb_close_t)(usb_dev_handle *dev);
-typedef int (*usb_get_string_t)(usb_dev_handle *dev, int index, int langid, 
+typedef int (*usb_get_string_t)(usb_dev_handle *dev, int index, int langid,
                                 char *buf, size_t buflen);
-typedef int (*usb_get_string_simple_t)(usb_dev_handle *dev, int index, 
+typedef int (*usb_get_string_simple_t)(usb_dev_handle *dev, int index,
                                        char *buf, size_t buflen);
 typedef int (*usb_get_descriptor_by_endpoint_t)(usb_dev_handle *udev, int ep,
-                                                unsigned char type, 
+                                                unsigned char type,
                                                 unsigned char index,
                                                 void *buf, int size);
 typedef int (*usb_get_descriptor_t)(usb_dev_handle *udev, unsigned char type,
                                     unsigned char index, void *buf, int size);
-typedef int (*usb_bulk_write_t)(usb_dev_handle *dev, int ep, char *bytes, 
+typedef int (*usb_bulk_write_t)(usb_dev_handle *dev, int ep, char *bytes,
                                 int size, int timeout);
-typedef int (*usb_bulk_read_t)(usb_dev_handle *dev, int ep, char *bytes, 
+typedef int (*usb_bulk_read_t)(usb_dev_handle *dev, int ep, char *bytes,
                                int size, int timeout);
 typedef int (*usb_interrupt_write_t)(usb_dev_handle *dev, int ep, char *bytes,
                                      int size, int timeout);
 typedef int (*usb_interrupt_read_t)(usb_dev_handle *dev, int ep, char *bytes,
                                     int size, int timeout);
-typedef int (*usb_control_msg_t)(usb_dev_handle *dev, int requesttype, 
-                                 int request, int value, int index, 
+typedef int (*usb_control_msg_t)(usb_dev_handle *dev, int requesttype,
+                                 int request, int value, int index,
                                  char *bytes, int size, int timeout);
 typedef int (*usb_set_configuration_t)(usb_dev_handle *dev, int configuration);
 typedef int (*usb_claim_interface_t)(usb_dev_handle *dev, int interface);
@@ -70,7 +70,7 @@ typedef int (*usb_install_service_np_t)(void);
 typedef int (*usb_uninstall_service_np_t)(void);
 typedef int (*usb_install_driver_np_t)(const char *inf_file);
 typedef const struct usb_version * (*usb_get_version_t)(void);
-typedef int (*usb_isochronous_setup_async_t)(usb_dev_handle *dev, 
+typedef int (*usb_isochronous_setup_async_t)(usb_dev_handle *dev,
                                              void **context,
                                              unsigned char ep, int pktsize);
 typedef int (*usb_bulk_setup_async_t)(usb_dev_handle *dev, void **context,
@@ -131,7 +131,7 @@ void usb_init(void)
 #define GetProcAddress(x,y) dlsym(x,y)
 #define ENOFILE ENOENT
 #endif
-  
+
   if(!libusb_dll)
     {
       fprintf(stderr, "Libusb not found, expect failure\n");
@@ -307,11 +307,11 @@ int usb_interrupt_read(usb_dev_handle *dev, int ep, char *bytes, int size,
 }
 
 int usb_control_msg(usb_dev_handle *dev, int requesttype, int request,
-                    int value, int index, char *bytes, int size, 
+                    int value, int index, char *bytes, int size,
                     int timeout)
 {
   if(_usb_control_msg)
-    return _usb_control_msg(dev, requesttype, request, value, index, bytes, 
+    return _usb_control_msg(dev, requesttype, request, value, index, bytes,
                             size, timeout);
   else
     return -ENOFILE;

@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 
@@ -25,22 +25,22 @@ Public License
 Thanks to
 - nahitafu@nifty.com (naxjp, XC95X algorithm example),
 - zoltan_csizmadia at yahoo dot (xilprg)
-- Benedikt Heinz <Zn000h@googlemail.com> for the XC3SAN ISF 
+- Benedikt Heinz <Zn000h@googlemail.com> for the XC3SAN ISF
 - and many others
 
 This program should run without installation. For accessing USB cables, libusb0
 is required as runtime dynamic linked libray.
 
-To compile, you need CMAKE, the static libftdi library and usb.h. 
+To compile, you need CMAKE, the static libftdi library and usb.h.
 
 $ mkdir build; cd build; cmake ..; make
 
 To crosscompile for Win32 with mingw:
 
-$ mkdir build-win32; cd build-win32; 
+$ mkdir build-win32; cd build-win32;
 $ cmake -DCMAKE_TOOLCHAIN_FILE=../Toolchain-mingw32.cmake ..
 
-Get a description with 
+Get a description with
 
 $ ./xc3sprog -h
 
@@ -50,7 +50,7 @@ Get a chain description:
 
 $ ./xcs3prog -j
 
-Device descrption is searched in the file pointed to by the XCDB environment 
+Device descrption is searched in the file pointed to by the XCDB environment
 variable, or when not found the built-in list is used
 
 Test the chain integrity
@@ -82,7 +82,7 @@ $ ./xc3sprog -I -C <your_bitfile.bit>
 
 You can readout XCF/ISF flash and CPLD
 
-ISF flash probably mean Incircuit Serial Flash, as internal to XC3SAN or 
+ISF flash probably mean Incircuit Serial Flash, as internal to XC3SAN or
 external connected to XC3SA/XC3SA or XC6S
 
 First load an appropriate bitfile. Some bitfiles are in bscan_spi. Otherwise
@@ -93,7 +93,7 @@ Load the bitfile, like
 
 $ ./xc3sprog bscan_spi/xc6s_cs324.ucf
 
-After loading the ISF Bitfile, you can now talk to the ISF Flash. When 
+After loading the ISF Bitfile, you can now talk to the ISF Flash. When
 writing to the ISF, at the end the FPGA tries to reconfigure from flash
 and the ISF Bitfile is lost.
 
@@ -110,8 +110,8 @@ Jedecfiles for CPLD programming can be parsed with
 
 $ ./jedecparse <jedecfile.jed>
 
-When using a FT2232D|L programmer, speed is noticely enhance with a USB-2.0 
-Hub between the adapter and the PC. Some effort has been made to concatenate 
+When using a FT2232D|L programmer, speed is noticely enhance with a USB-2.0
+Hub between the adapter and the PC. Some effort has been made to concatenate
 as many JTAG actions as possible.
 
 Example fallback multi boot setup on XC6S
@@ -124,17 +124,17 @@ $ ./xc3sprog -I -e
 
 Prepare the Multiboot header from the Template. Adapt GENERAL2 and GENERAL4 for
 your setup. Here a 32 MiBit Flash and a XC6SLX45 is used. The Bitstream length
-is about 1484404 = 0x16a674 bytes, so with placing the golden image at 0x10000 
+is about 1484404 = 0x16a674 bytes, so with placing the golden image at 0x10000
 the golden image ends at 0x17a674 and with placing the normal image at 0x190000,
-there should be enough spacing between both. Double check that GENERAL2 and 
+there should be enough spacing between both. Double check that GENERAL2 and
 GENERAL4 match the offsets.
 
 Write the header
-$ ./xc3sprog -I<boot_header_only_SPI_x1.hex> 
+$ ./xc3sprog -I<boot_header_only_SPI_x1.hex>
 
 Write golden image
 $ ./xc3sprog -I <golden image>:w:0x10000
- 
+
 Write normal image
 $ ./xc3sprog -I <normal image>:w:0x190000
 

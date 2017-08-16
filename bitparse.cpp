@@ -14,7 +14,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Changes:
 Dmitry Teytelman [dimtey@gmail.com] 14 Jun 2006 [applied 13 Aug 2006]:
@@ -96,7 +96,7 @@ int main(int argc, char**args)
 	fp=fopen(args[0],"rb");
 	if(!fp)
 	  {
-	    fprintf(stderr, "Can't open datafile %s: %s\n", args[0], 
+	    fprintf(stderr, "Can't open datafile %s: %s\n", args[0],
 		    strerror(errno));
 	  return 1;
 	  }
@@ -105,7 +105,7 @@ int main(int argc, char**args)
     fprintf(stderr, "Created from NCD file: %s\n",file.getNCDFilename());
     fprintf(stderr, "Target device: %s\n",file.getPartName());
     fprintf(stderr, "Created: %s %s\n",file.getDate(),file.getTime());
-    fprintf(stderr, "Bitstream length: %u bits %u bytes(0x%06x)\n", 
+    fprintf(stderr, "Bitstream length: %u bits %u bytes(0x%06x)\n",
             file.getLength(),file.getLength()/8,file.getLength()/8);
 
     for (i = 0; i < file.getLength()/8; i++)
@@ -116,7 +116,7 @@ int main(int argc, char**args)
         sum += (file.getData()[i]) ^0xff;
     }
     fprintf(stderr, "64-bit sum: %" PRIu64 "\n", sum);
-    
+
     if(outfile) {
       if(outfile[0] == '-')
 	fp = stdout;

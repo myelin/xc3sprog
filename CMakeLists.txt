@@ -32,7 +32,7 @@ else(LIBFTD2XX_FOUND)
   set(LIBFTD2XX_LIBRARIES "")
 endif(LIBFTD2XX_FOUND)
 
-if(EXISTS ${PROJECT_SOURCE_DIR}/.git) 
+if(EXISTS ${PROJECT_SOURCE_DIR}/.git)
   set(VERSION_STRING "${xc3sprog_VERSION_MAJOR}.${xc3sprog_VERSION_MINOR}-git")
 else(EXISTS ${PROJECT_SOURCE_DIR}/.git)
   FIND_PACKAGE(Subversion)
@@ -130,8 +130,8 @@ ADD_CUSTOM_COMMAND(OUTPUT cables.h
 
 INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(xc3sproglib  STATIC ioftdi.cpp iofx2.cpp 
-                      devicedb.cpp jtag.cpp jedecfile.cpp bitfile.cpp 
+add_library(xc3sproglib  STATIC ioftdi.cpp iofx2.cpp
+                      devicedb.cpp jtag.cpp jedecfile.cpp bitfile.cpp
 			iobase.cpp  progalgxc95x.cpp utilities.cpp
 			progalgxcf.cpp progalgxcfp.cpp progalgxc3s.cpp
 			progalgavr.cpp progalgxc2c.cpp  mapfile_xc2c.cpp
@@ -145,7 +145,7 @@ target_link_libraries(xc2c_warp xc3sproglib ${CONDITIONAL_LIBS})
 add_executable(detectchain detectchain.cpp cables.h devices.h)
 target_link_libraries(detectchain xc3sproglib ${LIBFTDI_LIBRARIES} ${LIBFTD2XX_LIBRARIES} ${CONDITIONAL_LIBS})
 
-add_executable(xc3sprog xc3sprog.cpp javr.cpp srecfile.cpp progalgavr.cpp 
+add_executable(xc3sprog xc3sprog.cpp javr.cpp srecfile.cpp progalgavr.cpp
 			devices.h)
 target_link_libraries(xc3sprog xc3sproglib ${LIBFTDI_LIBRARIES}  ${LIBFTD2XX_LIBRARIES} ${CONDITIONAL_LIBS}  )
 
@@ -165,4 +165,4 @@ add_subdirectory(packages)
 include(CPack)
 
 
-SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${GENERATED_FILES}") 
+SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${GENERATED_FILES}")

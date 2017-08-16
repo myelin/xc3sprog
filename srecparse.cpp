@@ -14,7 +14,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 */
 
@@ -25,13 +25,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 int main(int argc, char**args)
 {
-  if(argc < 2) 
+  if(argc < 2)
     {
       fprintf(stderr,"Usage: %s infile.rom\n",args[0]);
     }
-  else 
+  else
     {
-      try 
+      try
 	{
 	  SrecFile file;
 	  if (file.readSrecFile(args[1], 0)<0)
@@ -40,11 +40,11 @@ int main(int argc, char**args)
 	    fprintf(stderr, "start 0x%08x end 0x%08x len 0x%08x\n",
 		    file.getStart(), file.getEnd(), file.getLength());
 	}
-      catch(io_exception& e) 
+      catch(io_exception& e)
 	{
 	  fprintf(stderr, "IOException: %s", e.getMessage().c_str());
 	  return  1;
 	}
-      
+
     }
 }

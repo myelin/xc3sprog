@@ -37,7 +37,7 @@ CableDB::CableDB(const char *cf_name)
     char freq_string[64];
     char options[256];
     FILE *fp;
-    
+
     if(!cf_name)
     {
         if(!(cf_name = getenv("CABLEDB")))
@@ -53,13 +53,13 @@ CableDB::CableDB(const char *cf_name)
           int i;
 	  char buffer[256];
 	  fgets(buffer,256,fp);  // Get next line from file
-          i = strlen(buffer);         
+          i = strlen(buffer);
           while (i > 0 && isspace(buffer[i-1]))
             i--;
           buffer[i] = 0;
           if(buffer[0] == '#')
               continue;
-	  if (sscanf(buffer,"%64s %64s %64s %255[^;]", 
+	  if (sscanf(buffer,"%64s %64s %64s %255[^;]",
                      alias, cabletype, freq_string, options) == 4)
           {
               if (strchr(freq_string, ':'))
@@ -68,7 +68,7 @@ CableDB::CableDB(const char *cf_name)
                   break;
               }
               else
-                  cable.freq = atoi(freq_string);                  
+                  cable.freq = atoi(freq_string);
               cable.alias = new char[strlen(alias)+1];
               strcpy(cable.alias,alias);
               cable.cabletype = getCableType(cabletype);
@@ -84,7 +84,7 @@ CableDB::CableDB(const char *cf_name)
     {
         char buffer[512];
         const char *p = cabledb_string;
-        
+
         cablename = "built-in cable list";
         while(*p)
 	{
@@ -101,7 +101,7 @@ CableDB::CableDB(const char *cf_name)
             buffer[i] = 0;
             if(buffer[0] == '#')
                 continue;
-	  if (sscanf(buffer,"%64s %64s %d %255[^;]", 
+	  if (sscanf(buffer,"%64s %64s %d %255[^;]",
                      alias, cabletype, &cable.freq, options) == 4)
 	    {
                 cable.alias = new char[strlen(alias)+1];
@@ -117,7 +117,7 @@ CableDB::CableDB(const char *cf_name)
 CableDB::~CableDB()
 {
     unsigned int i;
-    
+
     for(i = 0; i < cable_db.size(); i++)
     {
         if (cable_db[i].alias != 0)
@@ -188,4 +188,4 @@ int CableDB::dumpCables(FILE *fp_out)
                 cable_db[i].freq,
                 cable_db[i].optstring);
     return 0;
-}       
+}

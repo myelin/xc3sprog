@@ -1,5 +1,5 @@
-/* 
- * Warp Coolrunner II Jedecfile to Bitfiles suitable for programming 
+/*
+ * Warp Coolrunner II Jedecfile to Bitfiles suitable for programming
  * and vice- versa
  *
  * Needs access to the Xilinx supplied .map files for transformation
@@ -106,7 +106,7 @@ int MapFile_XC2C::loadmapfile(const char *mapdir, const char *device)
 {
   FILE *fp;
   const char * mapfile;
-  
+
   if (strncasecmp(device, "XC2C32", 6) == 0)
     {
       block_size = 260;
@@ -149,14 +149,14 @@ int MapFile_XC2C::loadmapfile(const char *mapdir, const char *device)
       block_num  = 160;
       mapfile = "xc2c512";
     }
-  
+
   /* There are two extra rows for security/done and usercode bits*/
   block_num += 2;
 
   if (!mapdir)
-    if(!(mapdir = getenv("XC_MAPDIR")))  
+    if(!(mapdir = getenv("XC_MAPDIR")))
       mapdir = MAPDIR;
-  
+
   mapfilename = (char *) malloc(strlen(mapdir)+strlen(mapfile)+6);
   if (mapfilename)
     {

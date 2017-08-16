@@ -75,7 +75,7 @@ void ResetAVR(void)
 {
   char x[]={'1'};   /* High corresponds to external reset low */
 
-  if (debug& UL_FUNCTIONS) 
+  if (debug& UL_FUNCTIONS)
     fprintf(stderr,"ResetAVR\n");
   Send_Instruction(4,AVR_RESET);
   Send_Data(1,x);
@@ -657,7 +657,7 @@ void WriteFlashBlock(unsigned long startaddress, unsigned long length, unsigned 
       {
 	memcpy(buffer, src, MAX_BLOCK_SIZE);
 	src+=MAX_BLOCK_SIZE;
-      } 
+      }
     if(!WriteFlashPage(pagenumber, blocksize,buffer))
       return; /* Error Writing Flash */
     printf("                                        ");

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 Modifyied from fuse
 * Copyright (C) <2001>  <AJ Erasmus>
 * antone@sentechsa.com
-*/ 
+*/
 #ifndef AVRFUSEFILE_H
 #define AVRFUSEFILE_H
 #include <stdio.h>
@@ -58,7 +58,7 @@ class AvrFuseFile
   int Tokenize(unsigned char *buffer);
   int ParseAvrFuseFile(FILE *fp);
   char devicename[256];
-   
+
  public:
   AvrFuseFile(int deviceindex =0);
   int WriteAvrFuseFile(char * fname);

@@ -178,7 +178,7 @@ int ProgAlgXCFP::program(BitFile &file)
   if (file.getOffset() != 0 ||
       (file.getRLength() != 0 && file.getRLength() != file.getLengthBytes()))
     throw std::invalid_argument("XCFP does not yet support bitfile subranges");
- 
+
   jtag->tapTestLogicReset();
   jtag->Usleep(1000);
 

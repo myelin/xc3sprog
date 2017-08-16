@@ -1,4 +1,4 @@
-Bauen am Besten in eigenen Verzeichnis, z.b. 
+Bauen am Besten in eigenen Verzeichnis, z.b.
 mkdir build; cd build;
 "cmake .." oder "cmake -DCMAKE_BUILD_TYPE=Debug .."
 mkdir build-win32; cd build-win32;

@@ -1,4 +1,4 @@
-The IO routines that shift data out to the JTAG port start with the first byte of the buffer given. Each byte is is output LSB first. If the byte order was the same as the SVF file then the entire buffer would have to be stored and then reversed, causing problems for embedded JTAG servers with limited memory. 
+The IO routines that shift data out to the JTAG port start with the first byte of the buffer given. Each byte is is output LSB first. If the byte order was the same as the SVF file then the entire buffer would have to be stored and then reversed, causing problems for embedded JTAG servers with limited memory.
 
 
 

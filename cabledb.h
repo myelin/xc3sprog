@@ -23,9 +23,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <sys/types.h>
 
-enum CABLES_TYPES 
-  { 
-    CABLE_NONE, 
+enum CABLES_TYPES
+  {
+    CABLE_NONE,
     CABLE_UNKNOWN,
     CABLE_PP,
     CABLE_FTDI,
@@ -47,7 +47,7 @@ private:
   std::vector<cable_t> cable_db;
   std::string  cablename;
   CABLES_TYPES getCableType(const char *given_name);
- 
+
 public:
   CableDB(const char *cf_name);
   ~CableDB(void);

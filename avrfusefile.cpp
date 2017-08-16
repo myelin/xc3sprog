@@ -58,7 +58,7 @@ int AvrFuseFile::Tokenize(unsigned char *buffer)
       NULL
     };
    int i;
-   
+
    i=0;
    while(gToken[i])
    {
@@ -287,12 +287,12 @@ int AvrFuseFile::ParseAvrFuseFile(FILE * gFuseFile)
 	      Buffer[Index++]=c;
 	      DataCount++;
 	      if((c=='\r') || (c=='\n'))  /* End of comment */
-		{ 
+		{
 		  if (index == UNKNOWN_DEVICE)
 		    {
 		      for(i=0; gAVR_Data[i].jtag_id; i++)
 			{
-			  if (!(strncasecmp(gAVR_Data[i].name, 
+			  if (!(strncasecmp(gAVR_Data[i].name,
 					    (const char*)Buffer,
 					    strlen(gAVR_Data[i].name))))
 			    {
@@ -302,7 +302,7 @@ int AvrFuseFile::ParseAvrFuseFile(FILE * gFuseFile)
 			    }
 			}
 		    }
-		  Buffer[0]= 0;		  
+		  Buffer[0]= 0;
 		  Index=0;
 		  EventNum=1;
 		}
@@ -416,13 +416,13 @@ void AvrFuseFile::DisplayATMegaFuseData(void)
     /* 01110 */         "External Crystal (8 - 16MHz)",
     /* 01111 */         "External Crystal (8 - 16MHz)"
   };
-  
+
   const char *gTF[]={"True","False"};
   unsigned char tmp;
   unsigned long tmp1;
   AVR_Data gDeviceData = gAVR_Data[index];
   BOOT_Size gDeviceBOOTSize = gBOOT_Size[index];
-  
+
   if((index==ATMEGA162) || (index==AT90CAN128))
     {
       tmp=gFuseBitsAll.CKSEL;
@@ -474,7 +474,7 @@ void AvrFuseFile::DisplayATMegaFuseData(void)
 	 gTF[gFuseBitsAll.BOOTRST]);
   printf("BODLEVEL: 0x%X  ",gFuseBitsAll.BODLEVEL);
 
-  if(index == ATMEGA162) 
+  if(index == ATMEGA162)
   {
     switch(gFuseBitsAll.BODLEVEL)
     {
@@ -500,7 +500,7 @@ void AvrFuseFile::DisplayATMegaFuseData(void)
     printf("\n");
   }
   else
-  if(index == AT90CAN128) 
+  if(index == AT90CAN128)
   {
     switch(gFuseBitsAll.BODLEVEL)
     {

@@ -14,10 +14,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* 
+/*
  * Based on the Xilinx 1532 BSDL Files and alg95??.cpp for naxjp */
 
 
@@ -37,7 +37,7 @@ class ProgAlgXC95X
   static const byte ISC_PROGRAM;
   static const byte ISC_READ;
   static const byte ISC_ENABLE;
-  
+
   static const byte XSC_BLANK_CHECK;
 
   static const byte BYPASS;

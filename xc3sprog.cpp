@@ -81,26 +81,26 @@ int programXCF(Jtag &jtag, DeviceDB &db, int argc, char **args,
                bool verbose, bool erase, bool reconfigure,
                const char *device, int *chainpositions, int nchainpos,
                const vector<string>& xcfopts);
-int programXC95X(Jtag &jtag, unsigned long id, int argc, char **args, 
+int programXC95X(Jtag &jtag, unsigned long id, int argc, char **args,
                  bool verbose, bool erase, const char *device);
-int programXC2C(Jtag &jtag, unsigned int id, int argc, char ** args, 
+int programXC2C(Jtag &jtag, unsigned int id, int argc, char ** args,
                 bool verbose, bool erase, bool rUsercode, uint32_t wUsercode,
                 const char *mapdir, const char *device);
 int programSPI(Jtag &jtag, int argc, char ** args, bool verbose, bool erase,
                bool reconfig,  int test_count,
                char *bscanfile,int family, const char *device);
 
-int programXMega(Jtag *jtag, unsigned long id, int argc, char **args, 
+int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
 		 bool verbose, bool erase, bool reconfigure,
 		 const char *device);
 
 /* Excercise the IR Chain for at least 10000 Times
-   If we read a different pattern, print the pattern for for optical 
+   If we read a different pattern, print the pattern for for optical
    comparision and read for at least 100000 times more
 
    If we found no chain, simple rerun the chain detection
 
-   This may result in an endless loop to facilitate debugging with a scope etc 
+   This may result in an endless loop to facilitate debugging with a scope etc
 */
 void test_IRChain(Jtag *jtag, IOBase *io,DeviceDB &db , int test_count)
 {
@@ -117,7 +117,7 @@ void test_IRChain(Jtag *jtag, IOBase *io,DeviceDB &db , int test_count)
   int run_irtest = 0;
 
   if(num == 0)
-      /* the chain is not functional and we have no idea 
+      /* the chain is not functional and we have no idea
        * what parts to look for
        */
     {
@@ -125,7 +125,7 @@ void test_IRChain(Jtag *jtag, IOBase *io,DeviceDB &db , int test_count)
       k=0;
       for(i=0; i<test_count; i++)
 	{
-	  if (jtag->getChain(true)> 0) 
+	  if (jtag->getChain(true)> 0)
 	    {
 	      if(k%1000 == 1)
 		{
@@ -139,7 +139,7 @@ void test_IRChain(Jtag *jtag, IOBase *io,DeviceDB &db , int test_count)
     }
   if(num >8)
       fprintf(stderr, "Found %d devices\n", num);
-  
+
   /* Read the IDCODE via the IDCODE command */
   (void) signal (SIGINT, ctrl_c);
 
@@ -169,7 +169,7 @@ void test_IRChain(Jtag *jtag, IOBase *io,DeviceDB &db , int test_count)
     }
 
   if(run_irtest)
-    { /* ID Code did fail, to simple shift the IR chain */ 
+    { /* ID Code did fail, to simple shift the IR chain */
       fprintf(stderr, "Running IR_TEST %d  times\n", test_count);
       /* exercise the chain */
       for(i=0; i<num; i++)
@@ -189,7 +189,7 @@ void test_IRChain(Jtag *jtag, IOBase *io,DeviceDB &db , int test_count)
           int irlen = db.idToIRLength(jtag->getDeviceID(i));
 	  for(j=0; j<irlen; j++)
 	    {
-	      fprintf(stderr, "%c", 
+	      fprintf(stderr, "%c",
 		      (((dout[k>>3]>>(k&0x7)) &0x01) == 0x01)?'1':'0');
 	      k--;
 	    }
@@ -244,7 +244,7 @@ void test_IRChain(Jtag *jtag, IOBase *io,DeviceDB &db , int test_count)
 	      char l = (idcmd & (1<<j))?1:0;
 	      ir_in[len>>3] |= ((l)?(1<<(len & 0x7)):0);
 	      len++;
-	      jtag->longToByteArray(jtag->getDeviceID(i), dcmp+((num -1 -i)*4)); 
+	      jtag->longToByteArray(jtag->getDeviceID(i), dcmp+((num -1 -i)*4));
 	    }
 	}
       fprintf(stderr, "Sending %d bits IDCODE Commands: 0x", len);
@@ -278,7 +278,7 @@ void test_IRChain(Jtag *jtag, IOBase *io,DeviceDB &db , int test_count)
 	      fprintf(stderr, ".");
 	      fflush(stderr);
 	    }
-	} 
+	}
       fprintf(stderr, "\n");
     }
   if (failed)
@@ -332,7 +332,7 @@ unsigned long get_id(Jtag &jtag, DeviceDB &db, int chainpos)
     }
   return id;
 }
-  
+
 void usage(bool all_options)
 {
   fprintf(stderr, "usage:\txc3sprog -c cable [options] <file0spec> <file1spec> ...\n");
@@ -402,8 +402,8 @@ void usage(bool all_options)
 
 /* Parse a filename in the form
  *           aaaa.bb:action:0x10000|section:0x10000:rawhex:0x1000
- * for name, action, offset|area, style, length 
- * 
+ * for name, action, offset|area, style, length
+ *
  * return the Open File
  *
  * possible action
@@ -416,10 +416,10 @@ void usage(bool all_options)
  * possible sections:
  * f: Flash
  * a:
- * 
+ *
  */
 FILE *getFile_and_Attribute_from_name(
-    char *name, char * action, char * section, 
+    char *name, char * action, char * section,
     unsigned int *offset, FILE_STYLE *style, unsigned int *length)
 {
     FILE *ret;
@@ -431,7 +431,7 @@ FILE *getFile_and_Attribute_from_name(
     unsigned int localoffset = 0;
     FILE_STYLE localstyle=STYLE_BIT;
     unsigned int locallength = 0;
-    
+
     if(!p)
         return NULL;
     else
@@ -465,7 +465,7 @@ FILE *getFile_and_Attribute_from_name(
     if(p)
     {
         q = strchr(p,':');
-        
+
         if (q)
             len = q-p;
         else
@@ -512,7 +512,7 @@ FILE *getFile_and_Attribute_from_name(
     {
         int res = 0;
         q = strchr(p,':');
-        
+
         if (q)
             len = q-p;
         else
@@ -531,7 +531,7 @@ FILE *getFile_and_Attribute_from_name(
             p ++;
     }
     /*Length*/
-    
+
     if(p)
     {
         locallength = strtol(p, NULL, 0);
@@ -541,14 +541,14 @@ FILE *getFile_and_Attribute_from_name(
         if(p)
             p ++;
     }
-    
+
     if  (tolower(localaction) == 'r')
     {
         if (!(strcasecmp(filename,"stdout")))
             ret= stdout;
         else
         {
-            int res; 
+            int res;
             struct stat  stats;
             res = stat(filename, &stats);
             if ((res == 0) && (localaction == 'r') && stats.st_size !=0)
@@ -571,7 +571,7 @@ FILE *getFile_and_Attribute_from_name(
         {
             ret = fopen(filename,"rb");
             if(!ret)
-                fprintf(stderr, "Can't open datafile %s: %s\n", filename, 
+                fprintf(stderr, "Can't open datafile %s: %s\n", filename,
                         strerror(errno));
         }
     }
@@ -681,7 +681,7 @@ int main(int argc, char **args)
   // Start from parsing command line arguments
   while(true) {
       int c = getopt(argc, args, "?hCLc:d:DeE:F:i:I::jJ:Lm:o:p:Rs:S:T::uU:vX:");
-    switch(c) 
+    switch(c)
     {
     case -1:
       goto args_done;
@@ -776,7 +776,7 @@ int main(int argc, char **args)
 	  usage(false);
 	}
       break;
-      
+
      case 'd':
       dev = optarg;
       break;
@@ -857,7 +857,7 @@ int main(int argc, char **args)
       if (res == 1) exit(1);
       else usage(false);
     }
-  
+
   Jtag jtag = Jtag(io.get());
   jtag.setVerbose(verbose);
 
@@ -881,7 +881,7 @@ int main(int argc, char **args)
   unsigned int manufacturer = IDCODE_TO_MANUFACTURER(id);
 
   if (nchainpos != 1 &&
-      (manufacturer != MANUFACTURER_XILINX || family != FAMILY_XCF)) 
+      (manufacturer != MANUFACTURER_XILINX || family != FAMILY_XCF))
     {
       fprintf(stderr, "Multiple positions only supported in case of XCF\n");
       usage(false);
@@ -889,7 +889,7 @@ int main(int argc, char **args)
 
   if(spiflash)
       return programSPI(jtag, argc, args, verbose, erase,
-                        reconfigure, test_count, 
+                        reconfigure, test_count,
                         bscanfile, family, db.idToDescription(id));
   else if (manufacturer == MANUFACTURER_XILINX)
     {
@@ -915,7 +915,7 @@ int main(int argc, char **args)
 	  )
           return  programXC3S(jtag, argc, args, verbose,
                               reconfigure, family);
-  
+
       else if (family == FAMILY_XCF)
       {
           return programXCF(jtag, db, argc, args, verbose,
@@ -933,11 +933,11 @@ int main(int argc, char **args)
             return programXC2C(jtag, id, argc, args, verbose, erase, rUsercode,
                                wUsercode, mapdir, db.idToDescription(id));
 	}
-      else 
+      else
 	{
 	  fprintf(stderr,
 		  "Sorry, can't program Xilinx device '%s' from family 0x%02x "
-		  "A more recent release may be able to.\n", 
+		  "A more recent release may be able to.\n",
 		  db.idToDescription(id), family);
 	  return 1;
 	}
@@ -956,7 +956,7 @@ int main(int argc, char **args)
   else
     fprintf(stderr,
 	    "Sorry, can't program device '%s' from manufacturer 0x%02x "
-	    "A more recent release may be able to.\n", 
+	    "A more recent release may be able to.\n",
 	    db.idToDescription(id), manufacturer);
   return 1;
 }
@@ -1024,7 +1024,7 @@ int programXC3S(Jtag &jtag, int argc, char** args,
           FILE_STYLE bitfile_style = STYLE_BIT;
           FILE *fp;
           BitFile bitfile;
-          
+
           fp = getFile_and_Attribute_from_name
               (args[i], &action, NULL, &bitfile_offset,
                &bitfile_style, &bitfile_length);
@@ -1064,8 +1064,8 @@ int programXC3S(Jtag &jtag, int argc, char** args,
               }
               continue;
           }
- 
-          if(verbose) 
+
+          if(verbose)
           {
               fprintf(stderr, "Created from NCD file: %s\n",
                       bitfile.getNCDFilename());
@@ -1121,8 +1121,8 @@ int programXCF(Jtag &jtag, DeviceDB &db, int argc, char **args,
       char action = 'w';
       BitFile promfile;
       FILE_STYLE  promfile_style = STYLE_BIT;
-      
-      FILE *promfile_fp = 
+
+      FILE *promfile_fp =
           getFile_and_Attribute_from_name
           (args[i], &action, NULL, &promfile_offset,
            &promfile_style, &promfile_rlength);
@@ -1266,7 +1266,7 @@ int programSPI(Jtag &jtag, int argc, char ** args, bool verbose, bool erase,
 {
     int i;
     ProgAlgSPIFlash alg(jtag);
-    
+
     if (bscanfile)
     {
         programXC3S(jtag, 1, &bscanfile, verbose, 0, family);
@@ -1297,8 +1297,8 @@ int programSPI(Jtag &jtag, int argc, char ** args, bool verbose, bool erase,
         char action = 'w';
         BitFile spifile;
         FILE_STYLE  spifile_style = STYLE_BIT;
- 
-        FILE *spifile_fp = 
+
+        FILE *spifile_fp =
             getFile_and_Attribute_from_name
             (args[i], &action, NULL, &spifile_offset,
                  &spifile_style, &spifile_rlength);
@@ -1350,17 +1350,17 @@ test_reconf:
     return 0;
 }
 
-int programXC95X(Jtag &jtag, unsigned long id, int argc, char **args, 
+int programXC95X(Jtag &jtag, unsigned long id, int argc, char **args,
                  bool verbose, bool erase, const char *device)
 {
     int i, size = (id & 0x000ff000)>>13;
     ProgAlgXC95X alg(jtag, size);
-    
+
     if (erase)
     {
         alg.erase();
     }
-    
+
     for (i = 0; i< argc; i++)
     {
         int ret = 0;
@@ -1369,27 +1369,27 @@ int programXC95X(Jtag &jtag, unsigned long id, int argc, char **args,
         char action = 'w';
         JedecFile  jedecfile;
         FILE_STYLE  jedecfile_style= STYLE_JEDEC;
-             
+
         if (i>1)
         {
             fprintf(stderr, "Multiple arguments not supported: %s\n", args[i]);
             continue;
         }
-        
-        FILE *jedecfile_fp = 
+
+        FILE *jedecfile_fp =
             getFile_and_Attribute_from_name
             (args[i], &action, NULL, &jedecfile_offset,
              &jedecfile_style, &jedecfile_rlength);
-        
+
         if (jedecfile_offset != 0)
         {
-            fprintf(stderr, "Offset %d not supported, Using 0\n", 
+            fprintf(stderr, "Offset %d not supported, Using 0\n",
                     jedecfile_offset);
             jedecfile_offset = 0;
         }
         if (jedecfile_rlength != 0)
         {
-            fprintf(stderr, "Readlength %d not supported, Using 0\n", 
+            fprintf(stderr, "Readlength %d not supported, Using 0\n",
                     jedecfile_rlength);
             jedecfile_rlength = 0;
         }
@@ -1403,7 +1403,7 @@ int programXC95X(Jtag &jtag, unsigned long id, int argc, char **args,
             alg.array_read(jedecfile);
             jedecfile.saveAsJed(device, jedecfile_fp);
         }
-        else if (action == 'v' || tolower(action) == 'w') 
+        else if (action == 'v' || tolower(action) == 'w')
         {
             jedecfile.readFile(jedecfile_fp);
             if (action == 'w')
@@ -1423,7 +1423,7 @@ int programXC95X(Jtag &jtag, unsigned long id, int argc, char **args,
     return 0;
 }
 
-int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args, 
+int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
                  bool verbose, bool erase, bool rUsercode, uint32_t wUsercode,
 		 const char *mapdir, const char *device)
 {
@@ -1431,7 +1431,7 @@ int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
     int size_ind = (id & 0x001f0000)>>16;
     bool map_available = false;
     MapFile_XC2C map;
- 
+
     if (map.loadmapfile(mapdir, device))
     {
         // map.GetFilename() isn't defined if loadmapfile fails().
@@ -1458,7 +1458,7 @@ int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
             return ret;
         }
     }
-    
+
     for (i = 0; i< argc; i++)
     {
         int ret = 0;
@@ -1468,18 +1468,18 @@ int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
         BitFile  file;
         JedecFile  fuses;
         FILE_STYLE file_style= (map_available)?STYLE_JEDEC:STYLE_BIT;
-             
-        FILE *fp = 
+
+        FILE *fp =
             getFile_and_Attribute_from_name
             (args[i], &action, NULL, &file_offset,
              &file_style, &file_rlength);
-        
+
         if (i>1)
         {
             fprintf(stderr, "Multiple arguments not supported: %s\n", args[i]);
             continue;
         }
-        
+
         if (file_offset != 0)
         {
             fprintf(stderr, "Offset %d not supported, Using 0\n", file_offset);
@@ -1487,7 +1487,7 @@ int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
         }
         if (file_rlength != 0)
         {
-            fprintf(stderr, "Readlength %d not supported, Using 0\n", 
+            fprintf(stderr, "Readlength %d not supported, Using 0\n",
                     file_rlength);
             file_rlength = 0;
         }
@@ -1517,7 +1517,7 @@ int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
                     /*FIXME ret = */
                     map.jedecfile2bitfile(wUsercode, &fuses, &file);
             }
-            else 
+            else
             {
                 fprintf(stderr,"Reading style %s\n",
                         file.styleToString(file_style));
@@ -1533,13 +1533,13 @@ int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
                        sizeof("XC2CXX")) !=0)
             {
                 fprintf(stderr, "Incompatible File for Device %s\n"
-                        "Actual device in Chain is %s\n", 
+                        "Actual device in Chain is %s\n",
                             (map_available)?fuses.getDevice():
-                        file.getPartName(), 
+                        file.getPartName(),
                         device);
                 ret = 3;
             }
-            
+
             if (ret == 0)
             {
                 ProgAlgXC2C alg(jtag, size_ind);
@@ -1560,7 +1560,7 @@ int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
                 alg.done_program();
             }
         }
- 
+
         if(fp)
             fclose(fp);
         if (ret)
@@ -1569,7 +1569,7 @@ int programXC2C( Jtag &jtag, unsigned int id, int argc, char ** args,
     return 0;
 }
 
-int programXMega(Jtag *jtag, unsigned long id, int argc, char **args, 
+int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
 		 bool verbose, bool erase, bool reconfigure,
 		 const char *device)
 {
@@ -1578,7 +1578,7 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
     uint32_t appl_size, boot_size, eeprom_size, eeprom_page = 0x20;
     uint32_t flash_page = 0x200;
     uint8_t bypass = 0;
-    
+
     PDIoverJTAG protocol (jtag, 0x7);
     ProgAlgNVM alg(&protocol);
 
@@ -1623,7 +1623,7 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
         uint8_t row[200];
         alg.xnvm_read_memory(0x1000090, device_id, 5);
         fprintf(stderr,"DeviceID from MCU_CONTROL 0x%02x%02x%02x Rev %c"
-                " JTAGUID %02x\n", 
+                " JTAGUID %02x\n",
                 device_id[0],device_id[1], device_id[2],'A'+ device_id[3],
                 device_id[4]
             );
@@ -1635,8 +1635,8 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
                 "X:%02x%02x Y:%02x%02x\n",
                 row[0xd], row[0xc], row[0xb], row[0xa], row[9], row[8],
                 row[0x10], row[0x13], row[0x12], row[0x15], row[0x14]);
-       
-       
+
+
     }
     if(erase)
     {
@@ -1658,14 +1658,14 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
         FILE_STYLE file_style= STYLE_IHEX;
 	uint32_t base = 0x800000;
 	unsigned int length;
-             
-        FILE *fp = 
+
+        FILE *fp =
             getFile_and_Attribute_from_name
             (args[i], &action, &section, &file_offset,
              &file_style, &file_rlength);
         if((action != 'e') && !fp)
             continue;
- 
+
 	switch (section)
 	{
 	case 'a':
@@ -1709,7 +1709,7 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
 	else
 	    file.setOffset(length);
 
-	    
+
 	if (action == 'r')
 	{
 	    uint32_t res;
@@ -1723,13 +1723,13 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
 	    if(res != length)
 	    {
 		fprintf(stderr, "Xmega PDI Reading Section %c failed:"
-                        " read 0x%06x vs requested 0x%06x\n", 
+                        " read 0x%06x vs requested 0x%06x\n",
 			section, res, length);
                 res = 1;
                 goto xmega_release;
 	    }
 	    file.saveAs(file_style, device, fp);
- 
+
 	}
         else if (action == 'v')
         {
@@ -1742,22 +1742,22 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
 	    if(res != length)
 	    {
 		fprintf(stderr, "Xmega PDI Verify Section %c failed:"
-                        " 0x%06x read vs 0x%06x req\n", 
+                        " 0x%06x read vs 0x%06x req\n",
 			section, res, length);
                     ret = 1;
                     goto xmega_release;
-		
+
 	    }
             for(j=0; j<length; j++)
             {
                 if(file.getData()[j] != vfile.getData()[j])
                 {
                     fprintf(stderr, "Verify mismath at section %c pos 0x%06x:"
-                            " 0x%02x vs 0x%02x\n", 
+                            " 0x%02x vs 0x%02x\n",
                             section, j, file.getData()[j], vfile.getData()[j]);
                     ret = 1;
                     goto xmega_release;
-                }  
+                }
             }
             fprintf(stderr,"Verify %s success\n", args[i]);
         }
@@ -1818,11 +1818,11 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
                             (base + i, rfile.getData()+i, flash_page);
                     }
                     else
-                        res = alg.xnvm_erase_program_flash_page                            
+                        res = alg.xnvm_erase_program_flash_page
                             (base +i, rfile.getData()+i, flash_page);
                     if(res)
                     {
-                        fprintf(stderr, 
+                        fprintf(stderr,
                                 "Write failed for section %c Addr 0x%06x\n",
                                 section, i);
                         ret = 1;
@@ -1837,10 +1837,10 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
                 for (i= offset; i<length; i+=eeprom_page)
                 {
                     res = alg.xnvm_erase_program_eeprom_page
-                        (i,rfile.getData()+i, eeprom_page); 
+                        (i,rfile.getData()+i, eeprom_page);
                     if(res)
                     {
-                        fprintf(stderr, 
+                        fprintf(stderr,
                                 "Write failed for EEPROM Addr 0x%06x\n", i);
                         ret = 1;
                         goto xmega_release;
@@ -1852,7 +1852,7 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
             case 'f':
             {
                 uint32_t j , fuse = file_offset;
-                
+
                 for (j= fuse; j<length; j++)
                 {
                     uint8_t data = rfile.getData()[j];
@@ -1868,12 +1868,12 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
                             data &= 0xfe;
                         }
                     }
-                        
+
 #if 0
-                    res = alg.xnvm_write_fuse_byte(j, data); 
+                    res = alg.xnvm_write_fuse_byte(j, data);
                     if(res)
                     {
-                        fprintf(stderr, 
+                        fprintf(stderr,
                                 "Write Fuse %d failed\n", j);
                         ret = 1;
                         goto xmega_release;
@@ -1885,10 +1885,10 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
             }
             break;
             case 'l':
-//                res = alg.xnvm_write_lock_byte(rfile.getData()[0]); 
+//                res = alg.xnvm_write_lock_byte(rfile.getData()[0]);
                 if(res)
                 {
-                    fprintf(stderr, 
+                    fprintf(stderr,
                             "Write Lock failed\n");
                     ret = 1;
                     goto xmega_release;
@@ -1899,7 +1899,7 @@ int programXMega(Jtag *jtag, unsigned long id, int argc, char **args,
             }
         }
     }
-xmega_release:    
+xmega_release:
     alg.xnvm_pull_dev_out_of_reset();
     jtag->shiftIR(&bypass);
     return ret;

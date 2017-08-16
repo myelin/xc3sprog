@@ -1,7 +1,7 @@
 /* JTAG low-level I/O to FX2
 
 Using I2C addresses above 0x80 in the USRP/XGUFF framework
- 
+
 Copyright (C) 2005-2011 Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de
 
 This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ int IOFX2::Init(struct cable_t *cable, char const *serial, unsigned int freq)
     char *p = cable->optstring;
     char *description = 0;
     int res;
-    
+
   /* split string by hand for more flexibility*/
   if (p)
   {
@@ -74,7 +74,7 @@ int IOFX2::Init(struct cable_t *cable, char const *serial, unsigned int freq)
       if(p)
           p ++;
   }
-         
+
   if (verbose)
   {
       fprintf(stderr, "Cable %s type %s VID 0x%04x PID %04x",
@@ -90,7 +90,7 @@ int IOFX2::Init(struct cable_t *cable, char const *serial, unsigned int freq)
   res = fx2_usb_open_desc(vendor, product, description, serial);
   if(res)
   {
-      fprintf(stderr," Can't open device, res: %d\n", res);  
+      fprintf(stderr," Can't open device, res: %d\n", res);
       return res;
   }
   return 0;
@@ -112,7 +112,7 @@ void IOFX2::txrx_block(const unsigned char *tdi, unsigned char *tdo,
   if (tdi && tdo)
     {
       i2c_write_addr = USRP_CLOCK_INOUT_BYTES;
-      while (rem > USRP_CMD_SIZE*8) 
+      while (rem > USRP_CMD_SIZE*8)
 	{
 	  usrp_i2c_write(i2c_write_addr, tmpsbuf, USRP_CMD_SIZE);
 	  usrp_i2c_read(i2c_write_addr, tmprbuf, USRP_CMD_SIZE);
@@ -145,7 +145,7 @@ void IOFX2::txrx_block(const unsigned char *tdi, unsigned char *tdo,
   else if (tdi)
     {
       i2c_write_addr = USRP_CLOCK_OUT_BYTES;
-      while (rem > USRP_CMD_SIZE*8) 
+      while (rem > USRP_CMD_SIZE*8)
 	{
 	  usrp_i2c_write(i2c_write_addr, tmpsbuf, USRP_CMD_SIZE);
 	  tmpsbuf+=USRP_CMD_SIZE;
@@ -172,7 +172,7 @@ void IOFX2::txrx_block(const unsigned char *tdi, unsigned char *tdo,
   else
     {
       i2c_write_addr = USRP_CLOCK_IN_BYTES;
-      while (rem > USRP_CMD_SIZE*8) 
+      while (rem > USRP_CMD_SIZE*8)
 	{
 	  usrp_i2c_read(i2c_write_addr, tmprbuf, USRP_CMD_SIZE);
 	  tmprbuf+=USRP_CMD_SIZE;
@@ -216,69 +216,69 @@ int IOFX2::fx2_usb_open_desc(int vendor, int product, const char* description,
 			     const char* serial)
 {
   /* Adapted from libftdi:ftdi_usb_open_desc()
-     
+
      Opens the first device with a given, vendor id, product id,
-     description and serial. 
+     description and serial.
   */
-  
+
   struct usb_bus *bus;
   struct usb_device *dev;
   char string[256];
-  
+
   usb_init();
-  
+
   if (usb_find_busses() < 0)
        fx2_error_return(-1, "usb_find_busses() failed");
    if (usb_find_devices() < 0)
      fx2_error_return(-2, "usb_find_devices() failed");
-  
-  for (bus = usb_get_busses(); bus; bus = bus->next) 
+
+  for (bus = usb_get_busses(); bus; bus = bus->next)
     {
-      for (dev = bus->devices; dev; dev = dev->next) 
+      for (dev = bus->devices; dev; dev = dev->next)
 	{
 	  if (dev->descriptor.idVendor == vendor
-	      && dev->descriptor.idProduct == product) 
+	      && dev->descriptor.idProduct == product)
 	    {
 	      if (!(fx2_dev = usb_open(dev)))
 		fx2_error_return(-4, "usb_open() failed");
-	      if (description != NULL) 
+	      if (description != NULL)
 		{
 		  if (usb_get_string_simple(fx2_dev, dev->descriptor.iProduct,
-					    string, sizeof(string)) <= 0) 
+					    string, sizeof(string)) <= 0)
 		    {
 		      usb_close (fx2_dev);
-		      fx2_error_return(-8, 
+		      fx2_error_return(-8,
 				       "unable to fetch product description");
 		    }
-		  if (strncmp(string, description, sizeof(string)) != 0) 
+		  if (strncmp(string, description, sizeof(string)) != 0)
 		    {
 		      if (usb_close (fx2_dev) != 0)
 			fx2_error_return(-10, "unable to close device");
 		      continue;
 		    }
 		}
-	      
-	      if (serial != NULL) 
+
+	      if (serial != NULL)
 		{
-		  if (usb_get_string_simple(fx2_dev, 
-					    dev->descriptor.iSerialNumber, 
-					    string, sizeof(string)) <= 0) 
+		  if (usb_get_string_simple(fx2_dev,
+					    dev->descriptor.iSerialNumber,
+					    string, sizeof(string)) <= 0)
 		    {
 		      usb_close (fx2_dev);
 		      fx2_error_return(-9, "unable to fetch serial number");
 		    }
-		  if (strncmp(string, serial, sizeof(string)) != 0) 
+		  if (strncmp(string, serial, sizeof(string)) != 0)
 		    {
 		      if (usb_close (fx2_dev) != 0)
 			fx2_error_return(-10, "unable to close device");
 		      continue;
 		    }
-		  
+
 		}
-	      
+
 	      if (usb_close (fx2_dev) != 0)
 		fx2_error_return(-10, "unable to close device");
-	      
+
 	      fx2_dev = usrp_open_interface (dev, USRP_CMD_INTERFACE,
 					     USRP_CMD_ALTINTERFACE);
 	      if (fx2_dev)
@@ -292,7 +292,7 @@ int IOFX2::fx2_usb_open_desc(int vendor, int product, const char* description,
   fx2_error_return(-3, "device not found");
 }
 
-struct 
+struct
 usb_dev_handle * IOFX2::usrp_open_interface (struct usb_device *dev,
 					     int interface, int altinterface)
 {
@@ -333,7 +333,7 @@ bool IOFX2::usrp_close_interface (struct usb_dev_handle *udh)
 {
   // we're assuming that closing an interface automatically releases it.
   if(verbose)
-    fprintf(stderr, "USB Read Transactions: %d USB Write Transactions %d\n", 
+    fprintf(stderr, "USB Read Transactions: %d USB Write Transactions %d\n",
 	   calls_rd, calls_wr);
   return usb_close (udh) == 0;
 }
@@ -381,7 +381,7 @@ int  IOFX2::write_cmd (struct usb_dev_handle *udh,
   int r = usb_control_msg (udh, requesttype, request, value, index,
                            (char *) bytes, len, 1000);
   if (r < 0){
-    if (errno  == ENXIO) 
+    if (errno  == ENXIO)
       throw  io_exception(std::string("Device probably disconnected, Aborting!"));
     // we get EPIPE if the firmware stalls the endpoint.
     if (errno != EPIPE)
@@ -392,4 +392,4 @@ int  IOFX2::write_cmd (struct usb_dev_handle *udh,
   }
   return r;
 }
-  
+

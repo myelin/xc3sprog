@@ -145,7 +145,7 @@ void ProgAlgXC2C::flow_disable()
   jtag->shiftIR(&ISC_DISABLE);
   jtag->cycleTCK(1);
   jtag->Usleep(100);
- 
+
 }
 void ProgAlgXC2C::flow_reinit()
 {
@@ -241,7 +241,7 @@ void ProgAlgXC2C::array_program(BitFile &file)
   fprintf(stderr, "\n");
   jtag->shiftIR(&ISC_DISABLE, ircap);
 
- 
+
 }
 
 int ProgAlgXC2C::array_verify(BitFile &file)
@@ -322,7 +322,7 @@ void ProgAlgXC2C::array_read(BitFile &rbfile)
   byte ircap[1];
 
   rbfile.setLength(block_num *block_size);
-  
+
   jtag->shiftIR(&BYPASS, ircap);
   jtag->shiftIR(&ISC_ENABLE_OTF, ircap);
 

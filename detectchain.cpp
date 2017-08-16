@@ -46,7 +46,7 @@ extern char *optarg;
 
 void usage(void)
 {
-  fprintf(stderr, 
+  fprintf(stderr,
 	  "\nUsage: detectchain [-c cable_type] [-v]\n"
 	  "   -v\tverbose output\n"
 	  "   -J val\tRun at max with given JTAG Frequency, 0(default) means max. Rate of device\n"
@@ -79,17 +79,17 @@ int main(int argc, char **args)
     std::auto_ptr<IOBase>  io;
     int res;
     struct cable_t cable;
-    
+
     // Start from parsing command line arguments
     while(true) {
       switch(getopt(argc, args, "?hvc:d:J:LS:")) {
       case -1:
 	goto args_done;
-	
+
       case 'v':
 	verbose = true;
 	break;
-	
+
       case 'J':
         jtag_freq = atoi(optarg);
         break;
@@ -97,19 +97,19 @@ int main(int argc, char **args)
       case 'L':
 	use_ftd2xx = true;
 	break;
-	
+
       case 'c':
 	cablename =  optarg;
 	break;
-	
+
       case 'd':
 	dev = optarg;
 	break;
-		
+
       case 's':
 	serial = optarg;
 	break;
-		
+
       case '?':
       case 'h':
       default:
@@ -134,7 +134,7 @@ args_done:
       else usage();
     }
   io.get()->setVerbose(verbose);
-  
+
   Jtag jtag(io.get());
   jtag.setVerbose(verbose);
 

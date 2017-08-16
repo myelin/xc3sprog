@@ -36,8 +36,8 @@ void detect_chain(Jtag *jtag, DeviceDB *db)
     }
 }
 
-int  getIO( std::auto_ptr<IOBase> *io, struct cable_t * cable, char const *dev, 
-            char const *serial, bool verbose, bool use_ftd2xx, 
+int  getIO( std::auto_ptr<IOBase> *io, struct cable_t * cable, char const *dev,
+            char const *serial, bool verbose, bool use_ftd2xx,
             unsigned int freq)
 {
     int res = 1;
@@ -66,19 +66,19 @@ int  getIO( std::auto_ptr<IOBase> *io, struct cable_t * cable, char const *dev,
           res = io->get()->Init(cable, dev, use_freq);
 #endif
     }
-  else if(cable->cabletype == CABLE_FTDI)  
+  else if(cable->cabletype == CABLE_FTDI)
   {
       io->reset(new IOFtdi(use_ftd2xx));
       io->get()->setVerbose(verbose);
       res = io->get()->Init(cable, serial, use_freq);
   }
   else if(cable->cabletype  == CABLE_FX2)
-  { 
+  {
       io->reset(new IOFX2());
       io->get()->setVerbose(verbose);
       res = io->get()->Init(cable, serial, use_freq);
   }
-  else if(cable->cabletype == CABLE_XPC)  
+  else if(cable->cabletype == CABLE_XPC)
   {
       io->reset(new IOXPC());
       io->get()->setVerbose(verbose);

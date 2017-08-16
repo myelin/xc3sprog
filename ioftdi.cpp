@@ -142,7 +142,7 @@ int IOFtdi::Init(struct cable_t *cable, const char *serial, unsigned int freq)
       if(p)
           p ++;
   }
-  
+
   if (verbose)
   {
       fprintf(stderr, "Cable %s type %s VID 0x%04x PID 0x%04x",
@@ -151,7 +151,7 @@ int IOFtdi::Init(struct cable_t *cable, const char *serial, unsigned int freq)
           fprintf(stderr, " Desc \"%s\"", description);
       if (serial)
           fprintf(stderr, " Serial %s", serial);
-      
+
       fprintf(stderr, " dbus data %02x enable %02x cbus data %02x data %02x\n",
               dbus_data, dbus_en, cbus_data, cbus_en);
   }
@@ -174,9 +174,9 @@ int IOFtdi::Init(struct cable_t *cable, const char *serial, unsigned int freq)
                   ftdi_get_error_string(ftdi_handle));
           goto ftdi_fail;
       }
-      
+
       // Open device
-      res = ftdi_usb_open_desc(ftdi_handle, vendor, product, 
+      res = ftdi_usb_open_desc(ftdi_handle, vendor, product,
                                description, serial);
       if (res == 0)
       {
@@ -202,7 +202,7 @@ int IOFtdi::Init(struct cable_t *cable, const char *serial, unsigned int freq)
                       ftdi_get_error_string(ftdi_handle));
               goto ftdi_fail;
           }
-          
+
           // Set mode to MPSSE
           res = ftdi_set_bitmode(ftdi_handle, 0xfb, BITMODE_MPSSE);
           if(res< 0)
@@ -211,7 +211,7 @@ int IOFtdi::Init(struct cable_t *cable, const char *serial, unsigned int freq)
                       ftdi_get_error_string(ftdi_handle));
               goto ftdi_fail;
           }
-          /* FIXME: Without this read, consecutive runs on the 
+          /* FIXME: Without this read, consecutive runs on the
              FT2232H may hang */
           ftdi_read_data(ftdi_handle, buf1,5);
 
@@ -244,7 +244,7 @@ int IOFtdi::Init(struct cable_t *cable, const char *serial, unsigned int freq)
   {
       DWORD dwNumDevs;
       res = FT_CreateDeviceInfoList(&dwNumDevs);
-      if (res != FT_OK) 
+      if (res != FT_OK)
       {
           fprintf(stderr, "FT_CreateDeviceInfoList failed \n");
           goto fail;
@@ -269,12 +269,12 @@ int IOFtdi::Init(struct cable_t *cable, const char *serial, unsigned int freq)
           fprintf(stderr,
                   "On linux device selection second channnel fails due to missing LOCID\n");
 #else
-      if ((vendor != 0x0403) || 
+      if ((vendor != 0x0403) ||
           ((product != 0x6001) && (product != 0x6010) && (product != 0x6006)))
           fprintf(stderr,"FTD2XX/WIN: Can't set VID/PID to %04x:%04x. Expect failure\n",
                   vendor, product);
 #endif
-      
+
       if(serial)
           res = FT_OpenEx((void*)serial, FT_OPEN_BY_SERIAL_NUMBER, &ftd2xx_handle);
       else if(description)
@@ -291,7 +291,7 @@ int IOFtdi::Init(struct cable_t *cable, const char *serial, unsigned int freq)
           fprintf(stderr, "FTD2XX Open failed\n");
           goto fail;
       }
-      
+
       {
           FT_DEVICE ftDevice;
 
@@ -318,28 +318,28 @@ int IOFtdi::Init(struct cable_t *cable, const char *serial, unsigned int freq)
           fprintf(stderr, "FT_ResetDevice failed\n");
           goto fail;
       }
-      
+
       res = FT_SetBitMode(ftd2xx_handle, 0xfb, BITMODE_MPSSE);
       if (res != FT_OK)
       {
           fprintf(stderr, "FT_SetBitMode failed\n");
           goto fail;
       }
-      
+
       res = FT_Purge(ftd2xx_handle, FT_PURGE_RX | FT_PURGE_TX);
       if (res != FT_OK)
       {
           fprintf(stderr, "FT_Purge failed\n");
           goto fail;
       }
-      
+
       res = FT_SetLatencyTimer(ftd2xx_handle, 2);
       if (res != FT_OK)
       {
           fprintf(stderr, "FT_SetLatencyTimer failed\n");
           goto fail;
       }
-      
+
       res = FT_SetTimeouts(ftd2xx_handle, 1000, 1000);
       if (res != FT_OK)
       {
@@ -368,7 +368,7 @@ int IOFtdi::Init(struct cable_t *cable, const char *serial, unsigned int freq)
   buf[2] |= dbus_en;
   buf[7] = cbus_data;
   buf[8] = cbus_en;
-  
+
   mpsse_add_cmd(buf, 9);
   mpsse_send();
   /* On H devices, use the non-divided clock*/
@@ -422,15 +422,15 @@ void IOFtdi::txrx_block(const unsigned char *tdi, unsigned char *tdo,
   unsigned const char *tmpsbuf = tdi;
   unsigned char *tmprbuf = tdo;
   /* If we need to shift state, treat the last bit separate*/
-  unsigned int rem = (last)? length - 1: length; 
+  unsigned int rem = (last)? length - 1: length;
   unsigned char buf[TX_BUF];
   unsigned int buflen = TX_BUF - 3 ; /* we need the preamble*/
   unsigned int rembits;
-  
+
   /*out on -ve edge, in on +ve edge */
   if (rem/8 > buflen)
     {
-      while (rem/8 > buflen) 
+      while (rem/8 > buflen)
 	{
 	  /* full chunks*/
 	  buf[0] = ((tdo)?(MPSSE_DO_READ |MPSSE_READ_NEG):0)
@@ -438,15 +438,15 @@ void IOFtdi::txrx_block(const unsigned char *tdi, unsigned char *tdo,
 	  buf[1] = (buflen-1) & 0xff;        /* low lenbth byte */
 	  buf[2] = ((buflen-1) >> 8) & 0xff; /* high lenbth byte */
 	  mpsse_add_cmd (buf, 3);
-	  if(tdi) 
+	  if(tdi)
 	    {
 	      mpsse_add_cmd (tmpsbuf, buflen);
 	      tmpsbuf+=buflen;
 	    }
 	  rem -= buflen * 8;
-	  if (tdo) 
+	  if (tdo)
 	    {
-	      if  (readusb(tmprbuf,buflen) != buflen) 
+	      if  (readusb(tmprbuf,buflen) != buflen)
 		{
 		  fprintf(stderr,"IO_JTAG_MPSSE::shiftTDITDO:"
 			  "Failed to read block 0x%x bytes\n", buflen );
@@ -457,26 +457,26 @@ void IOFtdi::txrx_block(const unsigned char *tdi, unsigned char *tdo,
     }
   rembits = rem % 8;
   rem  = rem - rembits;
-  if (rem %8 != 0 ) 
+  if (rem %8 != 0 )
     fprintf(stderr,"IO_JTAG_MPSSE::shiftTDITDO: Programmer error\n");
   buflen = rem/8;
-  if(rem) 
+  if(rem)
     {
       buf[0] = ((tdo)?(MPSSE_DO_READ|MPSSE_READ_NEG):0)
 	|((tdi)?MPSSE_DO_WRITE:0)|MPSSE_LSB|MPSSE_WRITE_NEG;
       buf[1] =  (buflen - 1)       & 0xff; /* low length byte */
       buf[2] = ((buflen - 1) >> 8) & 0xff; /* high length byte */
       mpsse_add_cmd (buf, 3);
-      if(tdi) 
+      if(tdi)
 	    {
 	      mpsse_add_cmd (tmpsbuf, buflen );
 	      tmpsbuf  += buflen;
 	    }
     }
-  
+
   if (buflen >=(TX_BUF - 4))
     {
-      /* No space for the last data. Send and evenually read 
+      /* No space for the last data. Send and evenually read
          As we handle whole bytes, we can use the receiv buffer direct*/
       if(tdo)
 	{
@@ -485,7 +485,7 @@ void IOFtdi::txrx_block(const unsigned char *tdi, unsigned char *tdo,
 	}
       buflen = 0;
     }
-  if( rembits) 
+  if( rembits)
     {
       /* Clock Data Bits Out on -ve Clock Edge LSB First (no Read)
 	 (use if TCK/SK starts at 0) */
@@ -497,12 +497,12 @@ void IOFtdi::txrx_block(const unsigned char *tdi, unsigned char *tdo,
 	mpsse_add_cmd (tmpsbuf,1) ;
       buflen ++;
     }
-  if(last) 
+  if(last)
     {
       bool lastbit = false;
-      if(tdi) 
+      if(tdi)
 	lastbit = (*tmpsbuf & (1<< rembits));
-      /* TMS/CS with LSB first on -ve TCK/SK edge, read on +ve edge 
+      /* TMS/CS with LSB first on -ve TCK/SK edge, read on +ve edge
 	 - use if TCK/SK is set to 0*/
       buf[0] = MPSSE_WRITE_TMS|((tdo)?(MPSSE_DO_READ|MPSSE_READ_NEG):0)|
 	MPSSE_LSB|MPSSE_BITMODE|MPSSE_WRITE_NEG;
@@ -511,24 +511,24 @@ void IOFtdi::txrx_block(const unsigned char *tdi, unsigned char *tdo,
       mpsse_add_cmd (buf, 3);
       buflen ++;
     }
-  if(tdo) 
+  if(tdo)
     {
-      if (!last) 
+      if (!last)
 	{
 	  readusb(tmprbuf, buflen);
 	  if (rembits) /* last bits for incomplete byte must get shifted down*/
 	    tmprbuf[buflen-1] = tmprbuf[buflen-1]>>(8-rembits);
 	}
-      else 
+      else
 	{
 	  /* we need to handle the last bit. It's much faster to
 		 read into an extra buffer than to issue two USB reads */
-	  readusb(rbuf, buflen); 
-	  if(!rembits) 
+	  readusb(rbuf, buflen);
+	  if(!rembits)
 	    rbuf[buflen-1] = (rbuf[buflen - 1]& 0x80)?1:0;
-	  else 
+	  else
 	    {
-	      /* TDO Bits are shifted downwards, so align them 
+	      /* TDO Bits are shifted downwards, so align them
 		 We only shift TMS once, so the relevant bit is bit 7 (0x80) */
 	      rbuf[buflen-2] = rbuf[buflen-2]>>(8-rembits) |
 		((rbuf[buflen - 1]&0x80) >> (7 - rembits));
@@ -548,9 +548,9 @@ void IOFtdi::tx_tms(unsigned char *pat, int length, int force)
       return;
     while (len>0)
       {
-	/* Attention: Bug in FT2232L(D?, H not!). 
-	   With 7 bits TMS shift, static TDO 
-	   value gets set to TMS on last TCK edge*/ 
+	/* Attention: Bug in FT2232L(D?, H not!).
+	   With 7 bits TMS shift, static TDO
+	   value gets set to TMS on last TCK edge*/
 	buf[1] = (len >6)? 5: (len-1);
 	buf[2] = 0x80;
 	for (i=0; i < (buf[1]+1); i++)
@@ -581,7 +581,7 @@ unsigned int IOFtdi::readusb(unsigned char * rbuf, unsigned long len)
         DWORD  length = (DWORD) len, last_read;
         int timeout=0;
         FT_STATUS res;
-        
+
         calls_rd++;
         res = FT_Read(ftd2xx_handle, rbuf, length, &read);
         if(res != FT_OK)
@@ -589,7 +589,7 @@ unsigned int IOFtdi::readusb(unsigned char * rbuf, unsigned long len)
             fprintf(stderr,"readusb: Initial read failed\n");
             throw  io_exception();
         }
-        while ((read <length) && ( timeout <100 )) 
+        while ((read <length) && ( timeout <100 ))
         {
             retries++;
             res = FT_Read(ftd2xx_handle, rbuf+read, length-read, &last_read);
@@ -623,7 +623,7 @@ unsigned int IOFtdi::readusb(unsigned char * rbuf, unsigned long len)
         last_read = ftdi_read_data(ftdi_handle, rbuf, length );
         if (last_read > 0)
             read += last_read;
-        while (((int)read <length) && ( timeout <1000)) 
+        while (((int)read <length) && ( timeout <1000))
         {
             last_errno = 0;
             retries++;
@@ -668,22 +668,22 @@ void IOFtdi::deinit(void)
 {
   int read;
   /* Before shutdown, we must wait until everything is shifted out
-     Do this by temporary enabling loopback mode, write something 
+     Do this by temporary enabling loopback mode, write something
      and wait until we can read it back */
   static unsigned char   tbuf[16] = { SET_BITS_LOW, 0xff, 0x00,
                                       SET_BITS_HIGH, 0xff, 0x00,
                                       LOOPBACK_START,
 				      MPSSE_DO_READ|MPSSE_READ_NEG|
-				      MPSSE_DO_WRITE|MPSSE_WRITE_NEG|MPSSE_LSB, 
+				      MPSSE_DO_WRITE|MPSSE_WRITE_NEG|MPSSE_LSB,
 				      0x04, 0x00,
-				      0xaa, 0x55, 0x00, 0xff, 0xaa, 
+				      0xaa, 0x55, 0x00, 0xff, 0xaa,
 				      LOOPBACK_END};
   mpsse_add_cmd(tbuf, 16);
   read = readusb( tbuf,5);
-  if  (read != 5) 
+  if  (read != 5)
       fprintf(stderr,"Loopback failed, expect problems on later runs\n");
- 
-#ifdef USE_FTD2XX 
+
+#ifdef USE_FTD2XX
   if (ftd2xx_handle)
       FT_Close(ftd2xx_handle);
   else
@@ -698,7 +698,7 @@ void IOFtdi::deinit(void)
     fprintf(stderr, "USB transactions: Write %d read %d retries %d\n",
 	    calls_wr, calls_rd, retries);
 }
-  
+
 IOFtdi::~IOFtdi()
 {
   deinit();
@@ -710,7 +710,7 @@ IOFtdi::~IOFtdi()
 void IOFtdi::mpsse_add_cmd(unsigned char const *const buf, int const len) {
  /* The TX FIFO has 128 Byte. It can easily be overrun
     So send only chunks of the TX Buffersize and hope
-    that the OS USB scheduler gives the MPSSE machine 
+    that the OS USB scheduler gives the MPSSE machine
     enough time empty the buffer
  */
   if(fp_dbg)
@@ -744,7 +744,7 @@ void IOFtdi::mpsse_send() {
           fprintf(stderr, "mpsse_send: Initial write failed\n");
           throw  io_exception();
       }
-      while ((written < bptr) && ( timeout <100 )) 
+      while ((written < bptr) && ( timeout <100 ))
       {
           calls_wr++;
           res = FT_Write(ftd2xx_handle, usbuf+written, bptr - written, &last_written);
@@ -773,9 +773,9 @@ void IOFtdi::mpsse_send() {
   {
       calls_wr++;
       int written = ftdi_write_data(ftdi_handle, usbuf, bptr);
-      if(written != (int) bptr) 
+      if(written != (int) bptr)
       {
-          fprintf(stderr,"mpsse_send: Short write %d vs %d at run %d, Err: %s\n", 
+          fprintf(stderr,"mpsse_send: Short write %d vs %d at run %d, Err: %s\n",
                   written, bptr, calls_wr, ftdi_get_error_string(ftdi_handle));
           throw  io_exception();
       }

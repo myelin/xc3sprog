@@ -88,13 +88,13 @@ ProgAlgXCF::ProgAlgXCF(Jtag &j, int size_ind)
       fprintf(stderr,"Unknown XCF device size code %x\n", size_ind);
       throw std::invalid_argument("Unknown XCF device size code");
     }
-	
+
   jtag=&j;
 }
-/* For XCF, implement "xflow_erase_optimized" for the serial devices 
- * from the XCF..1532.bsd" files 
+/* For XCF, implement "xflow_erase_optimized" for the serial devices
+ * from the XCF..1532.bsd" files
  * and for XC18V flow_erase
- */ 
+ */
 
 int ProgAlgXCF::erase()
 {
@@ -120,7 +120,7 @@ int ProgAlgXCF::erase()
   jtag->longToByteArray(1,data);
   jtag->shiftDR(data,0,16);
   jtag->cycleTCK(1);
-  
+
   if(jtag->getVerbose())
     {
       fprintf(stderr, "Erasing");
@@ -133,7 +133,7 @@ int ProgAlgXCF::erase()
       byte xcstatus[1];
       if(jtag->getVerbose())
 	{
-	  fprintf(stderr, "."); 
+	  fprintf(stderr, ".");
 	  fflush(stderr);
 	}
       jtag->Usleep(500000);
@@ -218,7 +218,7 @@ int ProgAlgXCF::program(BitFile &file)
                   i, nblocks, frame);
           fflush(stderr);
         }
-        
+
       jtag->shiftIR(&ISC_DATA_SHIFT);
       if ((i+1) * block_size <= nbits)
         {
@@ -229,7 +229,7 @@ int ProgAlgXCF::program(BitFile &file)
           unsigned int rembytes = (nbits - (i * block_size) + 7) / 8;
           unsigned int padbytes = block_size / 8 - rembytes;
           memset(data, 0xff, padbytes);
-          jtag->shiftDR(&(file.getData())[i*block_size/8], 0, rembytes*8, 0, false); 
+          jtag->shiftDR(&(file.getData())[i*block_size/8], 0, rembytes*8, 0, false);
           jtag->shiftDR(data, 0, padbytes*8);
         }
 
@@ -293,7 +293,7 @@ int ProgAlgXCF::verify(BitFile &file)
 {
   byte data[MAX_BLOCK_SIZE/8];
   unsigned int skipbits, nbits;
-  
+
   skipbits = file.getOffset() * 8;
   if (skipbits % block_size != 0)
     {
@@ -357,7 +357,7 @@ int ProgAlgXCF::verify(BitFile &file)
 	  return res;
 	}
     }
- 
+
   if (jtag->getVerbose())
     fprintf(stderr, "\nSuccess! Verify time %.1f ms\n", timer.elapsed() * 1.0e3);
 
@@ -396,7 +396,7 @@ int ProgAlgXCF::read(BitFile &file)
 
   unsigned int skipblocks = skipbits / block_size;
   unsigned int nblocks    = (nbits + block_size - 1) / block_size;
- 
+
   file.setLength(nbits);
 
   Timer timer;
@@ -410,7 +410,7 @@ int ProgAlgXCF::read(BitFile &file)
       unsigned int frame = (skipblocks + i) * FRAMES_PER_BLOCK;
 
       if(jtag->getVerbose())
-        { 
+        {
           fprintf(stderr, "\rReading block %6u/%6u at XCF frame 0x%04x",
                   i, nblocks, frame);
 	  fflush(stderr);

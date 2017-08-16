@@ -14,7 +14,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Changes:
 Dmitry Teytelman [dimtey@gmail.com] 14 Jun 2006 [applied 13 Aug 2006]:
@@ -49,16 +49,16 @@ BitFile::BitFile()
 
 int BitFile::readBitfile(FILE *fp)
 {
-  try {  
+  try {
     { // Skip the header
       char hdr[13];
       fread(hdr, 1, 13, fp); // 13 byte header
     }
-    
+
     char         key;
     std::string *field;
     std::string  dummy;
-    
+
     while(!feof(fp)) {
       fread(&key, 1, 1, fp);
       switch(key) {
@@ -110,7 +110,7 @@ int  BitFile::readBIN(FILE *fp, bool do_bitrev)
         buffer[i] = bitRevTable[data];
     }
     return 0;
-} 
+}
 
 /* Read HEX values without preamble */
 int BitFile::readHEXRAW(FILE *fp)
@@ -118,7 +118,7 @@ int BitFile::readHEXRAW(FILE *fp)
     char buf[1024];
     unsigned int byte_count = 0;
     int res;
-    
+
     fseek(fp, 0, SEEK_END);
     res = ftell(fp);
     if (res == -1)
@@ -139,7 +139,7 @@ int BitFile::readHEXRAW(FILE *fp)
         unsigned char value;
        while (1)
         {
-            if (buf[bytes_read] == 0x0a || 
+            if (buf[bytes_read] == 0x0a ||
                 buf[bytes_read] == 0x0d ||
                 buf[bytes_read] == 0x20 ||
                 buf[bytes_read] == '/')
@@ -162,13 +162,13 @@ int BitFile::readHEXRAW(FILE *fp)
  *                                                                         *
  *   Copyright (C) 2008 by Spencer Oliver                                  *
  *   spen@spen-soft.co.uk                                                  *
- */ 
+ */
 
 int BitFile::readMCSfile(FILE *fp)
 {
   unsigned int full_address = 0;
   char buf[1024];
-  
+
   fseek(fp, 0, SEEK_END);
   length = (ftell(fp)  >> 1);
   fseek(fp, 0, SEEK_SET);
@@ -196,7 +196,7 @@ int BitFile::readMCSfile(FILE *fp)
       cal_checksum += (uint8_t)(address >> 8);
       cal_checksum += (uint8_t)address;
       cal_checksum += (uint8_t)record_type;
-            
+
       switch (record_type)
 	{
 	case 0:
@@ -204,7 +204,7 @@ int BitFile::readMCSfile(FILE *fp)
 	    {
 	      full_address = (full_address & 0xffff0000) | address;
 	    }
-	  
+
 	  while (count-- > 0)
 	    {
 	      unsigned int value;
@@ -253,7 +253,7 @@ int BitFile::readMCSfile(FILE *fp)
 	    cal_checksum += (uint8_t)(upper_address >> 8);
 	    cal_checksum += (uint8_t)upper_address;
 	    bytes_read += 4;
-	    
+
 	    if ((full_address >> 16) != upper_address)
 	      {
 		full_address = (full_address & 0xffff) | (upper_address << 16);
@@ -294,7 +294,7 @@ int BitFile::readMCSfile(FILE *fp)
 // Read in file
 int BitFile::readFile(FILE *fp, FILE_STYLE in_style)
 {
-  if(!fp) 
+  if(!fp)
     return 1;
   switch (in_style)
     {
@@ -328,13 +328,13 @@ int BitFile::readFile(FILE *fp, FILE_STYLE in_style)
     default: fprintf(stderr, " Unhandled style %s\n",styleToString(in_style));
       return 1;
     }
-	
+
 }
 
 void BitFile::processData(FILE *fp)
 {
   byte t[4];
-  fread(t,1,4,fp); 
+  fread(t,1,4,fp);
   length=(t[0]<<24)+(t[1]<<16)+(t[2]<<8)+t[3];
   if(buffer) delete [] buffer;
   buffer=new byte[length];
@@ -352,12 +352,12 @@ void BitFile::processData(FILE *fp)
 void BitFile::append(uint32_t val, unsigned cnt) {
   size_t const  nlen = length + 4*cnt;
   byte  *const  nbuf = new byte[nlen];
-    
+
   // copy old part
   for(size_t i = 0; i < length; i++)  nbuf[i] = buffer[i];
   delete [] buffer;
   buffer = nbuf;
-    
+
   // append new contents
   for(size_t  i = length; i < nlen; i += 4) {
     buffer[i+0] = bitRevTable[0xFF & (val >> 24)];
@@ -366,7 +366,7 @@ void BitFile::append(uint32_t val, unsigned cnt) {
     buffer[i+3] = bitRevTable[0xFF & (val >>  0)];
   }
   length = nlen;
-  
+
 }
 
 void BitFile::append(char const *fname) {
@@ -376,19 +376,19 @@ void BitFile::append(char const *fname) {
   try {
     struct stat  stats;
     stat(fname, &stats);
-    
+
     size_t const  nlen = length + stats.st_size;
     byte  *const  nbuf = new byte[nlen];
-    
+
     // copy old part
     for(size_t i = 0; i < length; i++)  nbuf[i] = buffer[i];
     delete [] buffer;
     buffer = nbuf;
-    
+
     // append new contents
     for(size_t i = length; i < nlen; i++) {
       if(feof(fp))  throw  io_exception("Unexpected end of file");
-      
+
       byte  b;
       fread(&b, 1, 1, fp);
       buffer[i] = bitRevTable[b]; // Reverse the bit order.
@@ -431,7 +431,7 @@ void BitFile::setNCDFields(const char * partname)
 
   t = time(NULL);
   tmp = localtime(&t);
-  if (tmp != NULL) 
+  if (tmp != NULL)
     {
       if (!dtime.size())
 	{
@@ -489,37 +489,37 @@ uint32_t BitFile::saveAs(FILE_STYLE style, const char  *device,
 	  uint8_t buffer[256] = {0x00, 0x09, 0x0f, 0xf0, 0x0f, 0xf0, 0x0f, 0xf0,
 			      0x0f, 0xf0, 0x00, 0x00, 0x01};
 	  int len;
-	  
+
 	  fwrite(buffer, 1, 13, fp);
-	  
+
 	  buffer[0] = 'a';
 	  len = ncdFilename.size();
 	  buffer[1] = len >>8;
 	  buffer[2] = len & 0xff;
 	  fwrite(buffer, 3, 1, fp);
 	  fwrite(ncdFilename.c_str(), len, 1, fp);
-	  
+
 	  buffer[0] = 'b';
 	  len = partName.size();
 	  buffer[1] = len >>8;
 	  buffer[2] = len & 0xff;
 	  fwrite(buffer, 3, 1, fp);
 	  fwrite(partName.c_str(), len, 1, fp);
-	  
+
 	  buffer[0] = 'c';
 	  len = date.size();
 	  buffer[1] = len >>8;
 	  buffer[2] = len & 0xff;
 	  fwrite(buffer, 3, 1, fp);
 	  fwrite(date.c_str(), len, 1, fp);
-	  
+
 	  buffer[0] = 'd';
 	  len = dtime.size();
 	  buffer[1] = len >>8;
 	  buffer[2] = len & 0xff;
 	  fwrite(buffer, 3, 1, fp);
 	  fwrite(dtime.c_str(), len, 1, fp);
-	  
+
 	  buffer[0] = 'e';
 	  buffer[1] = clip >>24 & 0xff;
 	  buffer[2] = clip >>16 & 0xff;
@@ -603,7 +603,7 @@ uint32_t BitFile::saveAs(FILE_STYLE style, const char  *device,
      default:
       fprintf(stderr, "Style not yet implemted\n");
     }
-  
+
   return clip;
 }
 
@@ -617,7 +617,7 @@ void BitFile::error(const string &str)
 void BitFile::readField(string &field, FILE *fp)
 {
   byte t[2];
-  fread(t,1,2,fp); 
+  fread(t,1,2,fp);
   unsigned short len=(t[0]<<8)+t[1];
   for(int i=0; i<len; i++){
     byte b;
@@ -636,7 +636,7 @@ void BitFile::set_bit(unsigned int idx, int blow)
       throw  io_exception(std::string("bit_set_fuse"));
     }
   bit  = idx % 8;
-  
+
   if (blow)
     buffer[bval] |=  (1 << bit);
   else
@@ -685,7 +685,7 @@ int BitFile::styleFromString(const char *stylestr, FILE_STYLE *style)
 	len = q-stylestr;
     else
 	len = strlen(stylestr);
-    
+
     if (!strncasecmp(stylestr, "BIT", len))
 	*style = STYLE_BIT;
     else if (!strncasecmp(stylestr, "BIN", len))

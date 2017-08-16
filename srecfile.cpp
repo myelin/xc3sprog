@@ -16,10 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-Modifyied from srecdec 
+Modifyied from srecdec
 * Copyright (C) <2001>  <AJ Erasmus>
 * antone@sentechsa.com
-*/ 
+*/
 
 
 #include "srecfile.h"
@@ -39,11 +39,11 @@ int SrecFile::DecodeSRecordLine(char *source, unsigned char *dest, S_Record *SRe
   {
      fprintf(stderr, "\r\n%s\r\n",source);
      if(*source != 'S')
-       { 
+       {
 	 fprintf(stderr, "DecodeSRecordLine: unexpected char 0x%02x", *source);
 	 if (isprint(*source))
 	   fprintf(stderr," \"%c\"", *source);
-	 fprintf(stderr, "\n");  
+	 fprintf(stderr, "\n");
 	 return -1;
        }
   }
@@ -234,13 +234,13 @@ int SrecFile::readSrecFile(char const * fname, unsigned int bufsize)
   int i, k;
   S_Record SRec;
   unsigned long StartAddress=0xFFFFFFFFUL,Address=0,NumberOfBytes=0,MaxA=0;
-  
+
   StartAddr  = 0;
   Bytes_Read = 0;
   EndAddr    = 0;
 
   FILE * fp=fopen(fname,"rb");
-  if(!fp)  
+  if(!fp)
     {
       if(!strchr(fname,'.'))
 	{
@@ -254,7 +254,7 @@ int SrecFile::readSrecFile(char const * fname, unsigned int bufsize)
 
   if (bufsize == 0)
     bufsize = 1024*1024; /* Defaule size if no size given*/
-		 
+
   buffer = (byte*)malloc(bufsize);
   if(!buffer)
     {

@@ -1,7 +1,7 @@
 /* JTAG low-level I/O to FX2
 
 Using I2C addresses above 0x80 in the USRP/XGUFF framework
- 
+
 Copyright (C) 2005-2011 Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #ifndef IOFX2_H
@@ -49,12 +49,12 @@ class IOFX2 : public IOBase
 {
  protected:
   int bptr, calls_rd, calls_wr;
-  
+
  public:
   IOFX2();
   int Init(struct cable_t *cable, char const *serial, unsigned int freq);
   ~IOFX2();
-  
+
   void txrx_block(const unsigned char *tdi, unsigned char *tdo, int length, bool last);
   void tx_tms(unsigned char *pat, int length, int force);
 

@@ -18,13 +18,13 @@ use UNISIM.VComponents.all;
 entity top is port (
 		RLED	 : out std_logic;
 		GLED	 : out std_logic;
-		
+
 		MOSI_ext : out std_logic;
 		MISO_ext : in std_logic;
-		
+
 		IO2		 : inout std_logic; -- WP
 		IO3		 : inout std_logic; -- HOLD/RESET
-		
+
 		CSB_ext	 : out std_logic
 	);
 end top;
@@ -58,7 +58,7 @@ begin
 
 	IO2 <= '1';
 	IO3 <= '1';
-	
+
 	RLED <= not CSB;
 	GLED <= '1';
 
@@ -130,7 +130,7 @@ begin
 
 
 	MOSI <= TDI;
-	
+
 	CSB <= '0' when CS_GO = '1' and CS_STOP = '0' else '1';
 
 	RAM_DI <= MISO & "";
@@ -140,80 +140,80 @@ begin
 	-- falling edges
 	process(DRCK1, CAPTURE, RESET, UPDATE, SEL1)
 	begin
-	
+
 		if CAPTURE = '1' or RESET='1' or UPDATE='1' or SEL1='0' then
-		
+
 			have_header <= '0';
-			
+
 			-- disable CSB
 			CS_GO_PREP <= '0';
 			CS_STOP <= '0';
-									
+
 		elsif falling_edge(DRCK1) then
-					
+
 			-- disable CSB?
 			CS_STOP <= CS_STOP_PREP;
-			
+
 			-- waiting for header?
 			if have_header='0' then
-				
+
 				-- got magic + len
 				if header(46 downto 15) = x"59a659a6" then
 					len <= header(14 downto 0) & "0";
 					have_header <= '1';
-										
+
 					-- enable CSB on rising edge (if len > 0?)
 					if (header(14 downto 0) & "0") /= x"0000" then
 						CS_GO_PREP <= '1';
 					end if;
-					
+
 				end if;
 
 			elsif len /= x"0000" then
 				len <= len - 1;
-			
+
 			end if;
-			
+
 		end if;
-		
+
 	end process;
-	
+
 	-- rising edges
 	process(DRCK1, CAPTURE, RESET, UPDATE, SEL1)
 	begin
-	
+
 		if CAPTURE = '1' or RESET='1' or UPDATE='1' or SEL1='0' then
-	
+
 			-- disable CSB
 			CS_GO <= '0';
 			CS_STOP_PREP <= '0';
-			
+
 			RAM_WADDR <= (others => '0');
 			RAM_RADDR <= (others => '0');
 			RAM_WE <= '0';
-				
+
 		elsif rising_edge(DRCK1) then
-					
+
 			RAM_RADDR <= RAM_RADDR + 1;
-			
+
 			RAM_WE <= not CSB;
-			
+
 			if RAM_WE='1' then
 				RAM_WADDR <= RAM_WADDR + 1;
 			end if;
-			
+
 			header <= header(46 downto 0) & TDI;
-			
+
 			-- enable CSB?
 			CS_GO <= CS_GO_PREP;
-			
+
 			-- disable CSB on falling edge
 			if CS_GO = '1' and len = x"0000" then
 				CS_STOP_PREP <= '1';
 			end if;
-			
+
 		end if;
-	
+
 	end process;
-	
+
 end Behavioral;

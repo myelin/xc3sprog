@@ -31,24 +31,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 class ProgAlgXC2C
 {
  private:
-  static const byte IDCODE;	  
-  static const byte ISC_ENABLE_OTF;	  
-  static const byte ISC_ENABLE;	  
+  static const byte IDCODE;
+  static const byte ISC_ENABLE_OTF;
+  static const byte ISC_ENABLE;
   static const byte ISC_SRAM_READ;
-  static const byte ISC_WRITE;	  
-  static const byte ISC_ERASE;	  
-  static const byte ISC_PROGRAM;  
-  static const byte ISC_READ;	  
-  static const byte ISC_INIT;	  
-  static const byte ISC_DISABLE;  
-  static const byte CONFIG;	  
+  static const byte ISC_WRITE;
+  static const byte ISC_ERASE;
+  static const byte ISC_PROGRAM;
+  static const byte ISC_READ;
+  static const byte ISC_INIT;
+  static const byte ISC_DISABLE;
+  static const byte CONFIG;
   static const byte USERCODE;
-  static const byte BYPASS;	  
+  static const byte BYPASS;
 
   Jtag *jtag;
-  int block_size;  
+  int block_size;
   int block_num;
-  int post; 
+  int post;
   void flow_disable();
   void flow_reinit();
   void flow_error_exit(){};

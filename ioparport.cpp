@@ -1,7 +1,7 @@
 /* JTAG GNU/Linux parport device io
 
 Copyright (C) 2004 Andrew Rogers
-Additions for Byte Blaster Cable (C) 2005-2011  Uwe Bonnes 
+Additions for Byte Blaster Cable (C) 2005-2011  Uwe Bonnes
                               bon@elektron.ikp.physik.tu-darmstadt.de
 
 This program is free software; you can redistribute it and/or modify
@@ -82,16 +82,16 @@ Dmitry Teytelman [dimtey@gmail.com] 14 Jun 2006 [applied 13 Aug 2006]:
 #include "par_nt.h"
 
 /*FIXME: These defines fit numerically, but not logically*/
-#  define PARPORT_CONTROL_STROBE    PARALLEL_INIT 
+#  define PARPORT_CONTROL_STROBE    PARALLEL_INIT
 #  define PARPORT_CONTROL_AUTOFD    PARALLEL_AUTOFEED
 #  define PARPORT_CONTROL_INIT      PARALLEL_PAPER_EMPTY
 #  define PARPORT_CONTROL_SELECT    PARALLEL_OFF_LINE
-  
+
 #  define PARPORT_STATUS_ERROR      PARALLEL_OFF_LINE
 #  define PARPORT_STATUS_SELECT     PARALLEL_POWER_OFF
 #  define PARPORT_STATUS_PAPEROUT   PARALLEL_NOT_CONNECTED
 #  define PARPORT_STATUS_ACK        PARALLEL_BUSY
-#  define PARPORT_STATUS_BUSY       PARALLEL_SELECTED 
+#  define PARPORT_STATUS_BUSY       PARALLEL_SELECTED
 #endif
 
 #include <sys/time.h>
@@ -115,7 +115,7 @@ Dmitry Teytelman [dimtey@gmail.com] 14 Jun 2006 [applied 13 Aug 2006]:
 #define BBLST_TCK_VALUE     BIT_MASK(0)              /* Base */
 #define BBLST_TMS_VALUE     BIT_MASK(1)              /* Base */
 #define BBLST_TDI_VALUE     BIT_MASK(6)              /* Base */
-#define BBLST_RESET_VALUE   BIT_MASK(3)              /* Base, Inv by Open 
+#define BBLST_RESET_VALUE   BIT_MASK(3)              /* Base, Inv by Open
 			    			        Collector Transistor */
 #define BBLST_TDO_MASK      PARPORT_STATUS_BUSY      /* Base + 1, Input */
 #define BBLST_LB_IN_MASK    PARPORT_STATUS_PAPEROUT  /* Base + 1, Input */
@@ -134,14 +134,14 @@ Dmitry Teytelman [dimtey@gmail.com] 14 Jun 2006 [applied 13 Aug 2006]:
 #define PCIII_CHECK_IN1     PARPORT_STATUS_BUSY
 #define PCIII_CHECK_IN2     PARPORT_STATUS_PAPEROUT
 
-							 
+
 using namespace std;
 
 int  IOParport::detectcable(void)
 {
   unsigned char data=0, status, control;
 
-  
+
   write_data(fd, data);
   read_status(fd, &status);
   read_control(fd, &control);
@@ -182,7 +182,7 @@ int  IOParport::detectcable(void)
 	  }
 	}
       /* now try all 4 permuttation */
-      data = (data & BBLST_LB_OUT_VALUE) ? (data & ~BBLST_LB_OUT_VALUE) : 
+      data = (data & BBLST_LB_OUT_VALUE) ? (data & ~BBLST_LB_OUT_VALUE) :
 	(data | BBLST_LB_OUT_VALUE);
       write_data(fd, data);
       read_status(fd, &status);
@@ -253,7 +253,7 @@ int  IOParport::detectcable(void)
 	return NO_CABLE;
       }
 
-/* 20100708: This check will only work with U1 on the DLC(clone) 
+/* 20100708: This check will only work with U1 on the DLC(clone)
  * from a high drive family like LVC and a not so strong driver at the end
  * of the JTAG chain, like an XCF0x.
  * E.G. Digilent S3 drives TDO-A with an LVC, while the
@@ -301,7 +301,7 @@ int  IOParport::detectcable(void)
   }
 }
 
-IOParport::IOParport() : IOBase(), total(0), debug(0) 
+IOParport::IOParport() : IOBase(), total(0), debug(0)
 {
 }
 
@@ -316,10 +316,10 @@ int IOParport::Init(struct cable_t *cable, const char *dev, unsigned int freq)
 
 #if defined (__linux__) || defined(__FreeBSD__)
   // Try to open parport device
-  if((fd = open(dev, O_RDWR)) == -1) 
+  if((fd = open(dev, O_RDWR)) == -1)
 #elif defined(__WIN32__)
     if ((fd = (int)CreateFile(dev, GENERIC_READ | GENERIC_WRITE,
-			      0, NULL, OPEN_EXISTING, 0, NULL)) 
+			      0, NULL, OPEN_EXISTING, 0, NULL))
 	== (int)INVALID_HANDLE_VALUE)
 #endif
       {
@@ -327,16 +327,16 @@ int IOParport::Init(struct cable_t *cable, const char *dev, unsigned int freq)
 		dev, strerror(errno));
 	return -1;
       }
-  
+
 #if defined (__linux__)
   // Lock port
   res = ioctl(fd, PPCLAIM);
-  if(res) 
+  if(res)
   {
       fprintf(stderr, "Port %s already in use\n", dev);
       return res;
   }
-  
+
   // Switch to compatibility mode
   int const  mode = IEEE1284_MODE_COMPAT;
   res = ioctl(fd, PPNEGOT, &mode);
@@ -375,8 +375,8 @@ bool IOParport::txrx(bool tms, bool tdi)
     fprintf(stderr,"IOParport::txrx tms %s tdi %s tdo %s \n",
 	    (tms)?"true ":"false", (tdi)?"true ":"false",
 	    (retval)?"true ":"false");
-  return retval; 
-    
+  return retval;
+
 }
 
 void IOParport::tx(bool tms, bool tdi)
@@ -389,7 +389,7 @@ void IOParport::tx(bool tms, bool tdi)
   if(tms)data|=tms_value; // D2 pin4
   write_data(fd, data);
   //delay(2);
-  data|=tck_value; // clk high 
+  data|=tck_value; // clk high
   total++;
   write_data(fd, data);
   //delay(2);
@@ -397,15 +397,15 @@ void IOParport::tx(bool tms, bool tdi)
   //write_data(fd, data);
   //delay(2);
 }
- 
+
 void IOParport::tx_tdi_byte(unsigned char tdi_byte)
 {
   int k;
-  
+
   for (k = 0; k < 8; k++)
     tx(false, (tdi_byte>>k)&1);
 }
- 
+
 void IOParport::txrx_block(const unsigned char *tdi, unsigned char *tdo,
 			   int length, bool last)
 {
@@ -416,7 +416,7 @@ void IOParport::txrx_block(const unsigned char *tdi, unsigned char *tdo,
   unsigned char data=def_byte;
   if (tdi)
       tdi_byte = tdi[j];
-      
+
   while(i<length-1){
       tdo_byte=tdo_byte+(txrx(false, (tdi_byte&1)==1)<<(i%8));
       if (tdi)
@@ -431,7 +431,7 @@ void IOParport::txrx_block(const unsigned char *tdi, unsigned char *tdo,
 	  tdi_byte=tdi[j]; // Get the next TDI byte
     }
   };
-  tdo_byte=tdo_byte+(txrx(last, (tdi_byte&1)==1)<<(i%8)); 
+  tdo_byte=tdo_byte+(txrx(last, (tdi_byte&1)==1)<<(i%8));
   if(tdo)
       tdo[j]=tdo_byte;
   write_data(fd, data); /* Make sure, TCK is low */
@@ -487,7 +487,7 @@ int IOParport::write_data(int fd, unsigned char data)
     return status == 0 ? XC3S_OK : -XC3S_EIO;
 #elif defined(__WIN32__)
     DWORD dummy;
-    status = DeviceIoControl((HANDLE)(fd), NT_IOCTL_DATA, &data, sizeof(data), 
+    status = DeviceIoControl((HANDLE)(fd), NT_IOCTL_DATA, &data, sizeof(data),
                              NULL, 0, (LPDWORD)&dummy, NULL);
     return status != 0 ? XC3S_OK : -XC3S_EIO;
 #else
@@ -530,7 +530,7 @@ int IOParport::read_control(int fd, unsigned char *control)
 #elif defined (__WIN32__)
     char ret;
     DWORD dummy;
-    status = DeviceIoControl((HANDLE)(fd), NT_IOCTL_CONTROL, NULL, 0, &ret, 
+    status = DeviceIoControl((HANDLE)(fd), NT_IOCTL_CONTROL, NULL, 0, &ret,
                              sizeof(ret), (LPDWORD)&dummy, NULL);
     *control = ret ^ S1284_INVERTED;
     return status == 0 ? XC3S_OK : -XC3S_EIO;
@@ -551,7 +551,7 @@ int IOParport::read_status(int fd, unsigned char *status)
 #elif defined (__WIN32__)
     unsigned char res;
     DWORD dummy;
-    ret = DeviceIoControl((HANDLE)(fd), NT_IOCTL_STATUS, NULL, 0, &res, 
+    ret = DeviceIoControl((HANDLE)(fd), NT_IOCTL_STATUS, NULL, 0, &res,
                              sizeof(res), (LPDWORD)&dummy, NULL);
     *status = res ;
     return ret == 0 ? XC3S_OK : -XC3S_EIO;
@@ -560,4 +560,4 @@ int IOParport::read_status(int fd, unsigned char *status)
 #endif
 }
 
-	
+

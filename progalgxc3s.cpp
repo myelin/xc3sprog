@@ -109,7 +109,7 @@ void ProgAlgXC3S::flow_array_program(BitFile &file)
 	  fflush(stderr);
 	}
     }
-  
+
   // Print the timing summary
   if (jtag->getVerbose())
     fprintf(stderr, " done. Programming time %.1f ms\n",
@@ -151,17 +151,17 @@ void ProgAlgXC3S::flow_program_xc2s(BitFile &file)
     jtag->shiftDR(xc2sbuf0,0, sizeof(xc2sbuf0) *8);
     jtag->shiftIR(JSTART);
     jtag->cycleTCK(13);
-    
+
     jtag->shiftIR(CFG_IN);
     jtag->shiftDR(xc2sbuf1,0, sizeof(xc2sbuf1) *8);
     jtag->shiftIR(JSTART);
     jtag->cycleTCK(13);
-    
+
     jtag->shiftIR(CFG_IN);
     jtag->shiftDR(xc2sbuf0,0, sizeof(xc2sbuf0) *8);
     jtag->shiftIR(JSTART);
     jtag->cycleTCK(13);
-    
+
     jtag->shiftIR(CFG_IN);
     jtag->shiftDR((file.getData()),0,file.getLength());
     jtag->cycleTCK(1);
@@ -189,14 +189,14 @@ void ProgAlgXC3S::flow_program_legacy(BitFile &file)
   data[0]=0x0;
   jtag->shiftDR(data,0,1);
   jtag->cycleTCK(1);
-  
+
   // Print the timing summary
   if (jtag->getVerbose())
     {
       fprintf(stderr, "done. Programming time %.1f ms\n",
 	      timer.elapsed() * 1000);
     }
- 
+
 }
 void ProgAlgXC3S::array_program(BitFile &file)
 {
@@ -205,7 +205,7 @@ void ProgAlgXC3S::array_program(BitFile &file)
 
   if (family == FAMILY_XC2S || family == FAMILY_XC2SE)
       return flow_program_xc2s(file);
-  
+
   flow_enable();
 
   /* JPROGAM: Triger reconfiguration, not explained in ug332, but
@@ -230,8 +230,8 @@ void ProgAlgXC3S::array_program(BitFile &file)
 	jtag->cycleTCK(1);
 	if (*(long long*)data != -1LL)
 	  /* ISC_DNA only works on a unconfigured device, see AR #29977*/
-	  fprintf(stderr, "DNA is 0x%02x%02x%02x%02x%02x%02x%02x%02x\n", 
-		 data[0], data[1], data[2], data[3], 
+	  fprintf(stderr, "DNA is 0x%02x%02x%02x%02x%02x%02x%02x%02x\n",
+		 data[0], data[1], data[2], data[3],
 		 data[4], data[5], data[6], data[7]);
 	break;
       }
@@ -255,7 +255,7 @@ void ProgAlgXC3S::array_program(BitFile &file)
       i++;
     }
   if (i == 50)
-    fprintf(stderr, 
+    fprintf(stderr,
 	    "Device failed to configure, INSTRUCTION_CAPTURE is 0x%02x\n",
 	    buf[0]);
 }

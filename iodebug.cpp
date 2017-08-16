@@ -35,7 +35,7 @@ bool IODebug::txrx(bool tms, bool tdi)
 void IODebug::tx(bool tms, bool tdi)
 {
   fprintf(stderr, "tx(%d,%d)\n",tms,tdi);
-  
+
 }
 
 void IODebug::tx_tdi_byte(unsigned char tdi_byte) {
@@ -58,7 +58,7 @@ void IODebug::txrx_block(const unsigned char *tdi, unsigned char *tdo,
       tdi_byte=tdi[j]; // Get the next TDI byte
     }
   };
-  tdo_byte=tdo_byte+(txrx(last, (tdi_byte&1)==1)<<(i%8)); 
+  tdo_byte=tdo_byte+(txrx(last, (tdi_byte&1)==1)<<(i%8));
   tdo[j]=tdo_byte;
   return;
 }

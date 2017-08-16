@@ -48,7 +48,7 @@ class ProgAlgAVR
 
   Jtag *jtag;
   unsigned int fp_size;
-  
+
   void progmode(bool enter);
 
  public:

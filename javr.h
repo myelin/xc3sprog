@@ -65,5 +65,5 @@ const BOOT_Size gBOOT_Size[]={
 
 
 
-int jAVR(Jtag &jtag, unsigned int i,  char * flashfile, bool verify, bool lock, 
+int jAVR(Jtag &jtag, unsigned int i,  char * flashfile, bool verify, bool lock,
 	 const char * eepromfile, const char * fusefile);

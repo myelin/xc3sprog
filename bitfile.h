@@ -100,7 +100,7 @@ class BitFile
   int  readHEXRAW(FILE *fp);
   int  readMCSfile(FILE *fp);
   unsigned char checksum(char * buf);
- 
+
  public:
   BitFile();
   ~BitFile();
@@ -109,7 +109,7 @@ class BitFile
   void append(uint32_t  val, unsigned cnt);
   void append(char const *file);
   int readFile(FILE *fp, FILE_STYLE in_style);
-  
+
  public:
   // Set offset of requested operation in bytes.
   inline void setOffset(unsigned int of)        { offset = of; }

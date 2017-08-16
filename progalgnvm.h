@@ -115,8 +115,8 @@ private:
     enum PDI_STATUS_CODE xnvm_erase_eeprom_buffer(uint32_t retries);
     enum PDI_STATUS_CODE xnvm_load_eeprom_page_buffer
     (uint32_t addr, uint8_t *buf, uint16_t len);
- 
- 
+
+
 public:
     uint8_t cmd_buffer[20];
     ProgAlgNVM(PDIoverJTAG *protocoll);

@@ -36,7 +36,7 @@
  * DAMAGE.
  */
 
-/* Adaptation to xc3sprog 
+/* Adaptation to xc3sprog
    Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de 2011
 */
 #include <string.h>

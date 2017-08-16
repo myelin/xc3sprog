@@ -458,7 +458,7 @@ void Jtag::nextTapState(bool tms)
   else if(current_state==SHIFT_IR){
     if(tms)current_state=EXIT1_IR; // If TMS was set then goto next state
   }
-  else 
+  else
     {
       fprintf(stderr,"Unexpected state %d\n",current_state);
       tapTestLogicReset(); // We were in an unexpected state

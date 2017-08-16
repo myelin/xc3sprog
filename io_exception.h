@@ -25,11 +25,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class io_exception {
   std::string const  msg;
-  
+
  public:
   io_exception(std::string const& _msg = "") : msg(_msg) {}
   ~io_exception() {}
-  
+
  public:
   operator std::string const&()   const { return  getMessage(); }
   std::string const& getMessage() const { return  msg; }

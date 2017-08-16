@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Changes:
 Dmitry Teytelman [dimtey@gmail.com] 14 Jun 2006 [applied 13 Aug 2006]:
@@ -31,13 +31,13 @@ Dmitry Teytelman [dimtey@gmail.com] 14 Jun 2006 [applied 13 Aug 2006]:
 
 int main(int argc, char**args)
 {
-  if(argc < 2) 
+  if(argc < 2)
     {
       fprintf(stderr,"Usage: %s infile.jed\n",args[0]);
     }
-  else 
+  else
     {
-      try 
+      try
 	{
 	  JedecFile  file;
 	  FILE *fp;
@@ -48,12 +48,12 @@ int main(int argc, char**args)
 	      fp=fopen(args[1],"rb");
 	      if(!fp)
 		{
-		  fprintf(stderr, "Can't open datafile %s: %s\n", args[1], 
+		  fprintf(stderr, "Can't open datafile %s: %s\n", args[1],
 			  strerror(errno));
 		  return 1;
 		}
 	    }
-	    
+
 	  file.readFile(fp);
 	  fp = NULL;
 	  if(args[2])
@@ -62,7 +62,7 @@ int main(int argc, char**args)
 		fp = stdout;
 	      fp = fopen(args[2], "wb");
 	      if (!fp)
-		fprintf(stderr," Can't open %s: %s  \n", args[2], 
+		fprintf(stderr," Can't open %s: %s  \n", args[2],
 			strerror(errno));
 	    }
 	  fprintf(stderr, "Device %s: %d Fuses\n"
@@ -74,11 +74,11 @@ int main(int argc, char**args)
 		  file.getDate());
 	  file.saveAsJed(file.getDevice(), fp);
 	}
-      catch(io_exception& e) 
+      catch(io_exception& e)
 	{
 	  fprintf(stderr, "IOException: %s", e.getMessage().c_str());
 	  return  1;
 	}
-      
+
     }
 }

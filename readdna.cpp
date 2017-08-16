@@ -44,7 +44,7 @@ extern char *optarg;
 
 void usage(void)
 {
-  fprintf(stderr, 
+  fprintf(stderr,
 	  "\nUsage: readdna [-c cable_type] [-v]\n"
 	  "   -v\tverbose output\n"
 	  "   -J val\tRun at max with given JTAG Frequency, 0(default) means max. Rate of device\n"
@@ -90,7 +90,7 @@ unsigned int get_id(Jtag &jtag, DeviceDB &db, int chainpos, bool verbose)
         return 0;
       }
   }
-  
+
   if(jtag.selectDevice(chainpos)<0){
     fprintf(stderr,"Invalid chain position %d, position must be less than %d (but not less than 0).\n",chainpos,num);
     return 0;
@@ -105,7 +105,7 @@ unsigned int get_id(Jtag &jtag, DeviceDB &db, int chainpos, bool verbose)
 
   return id;
 }
-  
+
 int main(int argc, char **args)
 {
     bool        verbose = false;
@@ -122,17 +122,17 @@ int main(int argc, char **args)
     std::auto_ptr<IOBase>  io;
     DeviceDB db(devicedb);
     int res;
-   
+
     // Start from parsing command line arguments
     while(true) {
       switch(getopt(argc, args, "?hvc:d:J:L")) {
       case -1:
 	goto args_done;
-		
+
       case 'v':
 	verbose = true;
 	break;
-      
+
       case 'J':
         jtag_freq = atoi(optarg);
         break;
@@ -140,19 +140,19 @@ int main(int argc, char **args)
       case 'L':
 	use_ftd2xx = true;
 	break;
-      
+
       case 'c':
 	cablename =  optarg;
 	break;
-		
+
       case 'd':
 	dev = optarg;
 	break;
-		
+
       case 's':
 	serial = optarg;
 	break;
-		
+
       case '?':
       case 'h':
       default:
@@ -166,10 +166,10 @@ args_done:
   args += optind;
   //printf("argc: %d\n", argc);
   if((argc != 0) || (cablename == 0)) usage();
-  
+
   if (verbose)
     fprintf(stderr, "Using %s\n", db.getFile().c_str());
- 
+
   CableDB cabledb(0);
   res = cabledb.getCable(cablename, &cable);
   res = getIO( &io, &cable, dev, serial, verbose, use_ftd2xx, jtag_freq);
@@ -179,7 +179,7 @@ args_done:
       else usage();
     }
   io.get()->setVerbose(verbose);
-  
+
   Jtag jtag(io.get());
   jtag.setVerbose(verbose);
   get_id (jtag, db, chainpos, verbose);
@@ -208,8 +208,8 @@ args_done:
   jtag.shiftIR(idata);
   jtag.shiftDR(0, odata, 64);
   if (*(long long*)odata != -1LL)
-    printf("DNA is 0x%02x%02x%02x%02x%02x%02x%02x%02x\n", 
-		 odata[0], odata[1], odata[2], odata[3], 
+    printf("DNA is 0x%02x%02x%02x%02x%02x%02x%02x%02x\n",
+		 odata[0], odata[1], odata[2], odata[3],
 		 odata[4], odata[5], odata[6], odata[7]);
 
   idata[0] = ISC_DISABLE;
@@ -218,7 +218,7 @@ args_done:
   /* Release JTAG control over configuration (AR 16829)*/
   jtag.tapTestLogicReset();
   idata[0] = JPROGRAM;
-  jtag.shiftIR(idata); 
+  jtag.shiftIR(idata);
   /* Now device will reconfigure from standard configuration source */
   idata[0] = BYPASS;
   fprintf(stderr, "Will wait up to 10 seconds for device to reconfigure.");

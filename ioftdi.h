@@ -47,7 +47,7 @@ class IOFtdi : public IOBase
 {
  protected:
 #ifdef USE_FTD2XX
-  FT_HANDLE ftd2xx_handle;   
+  FT_HANDLE ftd2xx_handle;
 #endif
   struct ftdi_context *ftdi_handle;
   unsigned char usbuf[TX_BUF];

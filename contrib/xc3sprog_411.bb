@@ -5,7 +5,7 @@ HOMEPAGE="http://sourceforge.net/projects/xc3sprog"
 
 DEPENDS += "libftdi"
 
-SRC_URI = "svn://xc3sprog.svn.sourceforge.net/svnroot/xc3sprog;proto=https;module=trunk" 
+SRC_URI = "svn://xc3sprog.svn.sourceforge.net/svnroot/xc3sprog;proto=https;module=trunk"
 SRCREV = ${PV}
 
 S="${WORKDIR}/trunk"

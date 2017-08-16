@@ -1,7 +1,7 @@
 /* JTAG low level functions and base class for cables
 
 Copyright (C) 2004 Andrew Rogers
-Additions (C) 2005-2011  Uwe Bonnes 
+Additions (C) 2005-2011  Uwe Bonnes
                          bon@elektron.ikp.physik.tu-darmstadt.de
 
 This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ Dmitry Teytelman [dimtey@gmail.com] 14 Jun 2006 [applied 13 Aug 2006]:
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
- 
+
 using namespace std;
 IOBase::IOBase()
 {
@@ -44,12 +44,12 @@ IOBase::IOBase()
     memset(zeros,   0,CHUNK_SIZE);
     memset(tms_buf,   0,CHUNK_SIZE);
     tms_len = 0;
-}    
+}
 
 int IOBase::Init(struct cable_t *cable, const char *devopt, unsigned int freq)
 {
     return 0;
-}    
+}
 
 void IOBase::flush_tms(int force)
 {
@@ -67,7 +67,7 @@ void IOBase::set_tms(bool val)
     tms_buf[tms_len/8] |= (1 <<(tms_len &0x7));
   tms_len++;
 }
-    
+
 void IOBase::shiftTDITDO(const unsigned char *tdi, unsigned char *tdo,
 			 int length, bool last)
 {

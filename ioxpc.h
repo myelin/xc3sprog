@@ -1,7 +1,7 @@
 /* JTAG low-level I/O to DLC9(10?) cables
 
 Using I2C addresses above 0x80 in the USRP/XGUFF framework
- 
+
 Copyright (C) 2005-2011 Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #ifndef IOXPC_H
@@ -71,12 +71,12 @@ class IOXPC : public IOBase
   int subtype;
   unsigned long long hid;
   FILE *fp_dbg;
-  
+
  public:
   IOXPC();
   int Init(struct cable_t *cable, char const *serial, unsigned int freq);
   ~IOXPC();
-  
+
   void txrx_block(const unsigned char *tdi, unsigned char *tdo, int length, bool last);
   void tx_tms(unsigned char *pat, int length, int force);
 
@@ -95,7 +95,7 @@ class IOXPC : public IOBase
   int xpcu_shift(struct usb_dev_handle *xpcu, int reqno, int bits, int in_len, unsigned char *in, int out_len, unsigned char *out );
   void xpcu_add_bit_for_ext_transfer( xpc_ext_transfer_state_t *xts, bool in, bool tms, bool is_real );
   int xpcu_do_ext_transfer( xpc_ext_transfer_state_t *xts );
-  
+
   int xpc_usb_open_desc(int vendor, int product, const char* description, unsigned long long int serial);
   bool xpc_close_interface (struct usb_dev_handle *udh);
 };

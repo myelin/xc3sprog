@@ -233,7 +233,7 @@ SrecRd ReadData(FILE *fp,unsigned char *Data,long MaxLen)
     SRec = DecodeSRecordLine(LineBuffer,LBuf);
     if (SRec.Type == INVALID_REC)
         return Rslt;
-        
+
     k=RecordType(SRec.Type);
     if(k==DATARECORD)
     {

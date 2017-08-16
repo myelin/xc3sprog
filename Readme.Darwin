@@ -42,7 +42,7 @@ mkdir build
 cd build
 cmake ..
 
-- once cmake discover all the components necessary for the build 
+- once cmake discover all the components necessary for the build
 (require at least libusb and libftdi - proceed with the classical make)
 make
 

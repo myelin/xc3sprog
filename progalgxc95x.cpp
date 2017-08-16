@@ -97,7 +97,7 @@ int ProgAlgXC95X::flow_blank_check()
 	fprintf(stderr, "Device is not blank\n");
     }
   return ((o_data[0] & 0x03) == 0x01);
-  
+
 }
 
 void ProgAlgXC95X::flow_erase()
@@ -110,7 +110,7 @@ void ProgAlgXC95X::flow_erase()
   if((data[0]& 0x03) != 0x01)
     fprintf(stderr, "Erase still running %02x\n", data[0]);
 }
-  
+
 #define MaxSector 108
 #define MaxDRegLength 16
 
@@ -125,7 +125,7 @@ int ProgAlgXC95X::flow_array_program(JedecFile &file)
   int k, sec,l,m;
   unsigned char data;
   unsigned int idx=0;
-     
+
 
   gettimeofday(tv, NULL);
   for(sec=0;sec < MaxSector;sec++)
@@ -262,7 +262,7 @@ void ProgAlgXC95X::flow_array_read(JedecFile &rbfile)
 	data = data >> 1;
       }
     }
-  
+
   gettimeofday(tv+1, NULL);
   if(jtag->getVerbose())
     fprintf(stderr, "\nReadback time %.1f ms\n",
@@ -344,13 +344,13 @@ int ProgAlgXC95X::flow_array_verify(JedecFile &file)
 	data = data >> 1;
       }
     }
-  
+
   gettimeofday(tv+1, NULL);
   if(jtag->getVerbose())
     fprintf(stderr, "\nSuccess! Verify time %.1f ms\n",
 	    (double)deltaT(tv, tv + 1)/1.0e3);
   return 0;
-}	    
+}
 
 void ProgAlgXC95X::array_read(JedecFile &file)
 {

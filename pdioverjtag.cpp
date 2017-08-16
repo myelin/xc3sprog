@@ -42,7 +42,7 @@ PDIoverJTAG::~PDIoverJTAG(void)
 	fclose(pdi_dbg);
 }
 
-enum PDI_STATUS_CODE PDIoverJTAG::pdi_write(const uint8_t *data, 
+enum PDI_STATUS_CODE PDIoverJTAG::pdi_write(const uint8_t *data,
 					    uint16_t length)
 {
     int i;
@@ -54,7 +54,7 @@ enum PDI_STATUS_CODE PDIoverJTAG::pdi_write(const uint8_t *data,
 	    fprintf(pdi_dbg, " %02x", data[i]);
 	fprintf(pdi_dbg, "\n");
     }
-    
+
     jtag->shiftIR(&pdicmd);
     for (i = 0; i < length; i++)
     {
@@ -76,10 +76,10 @@ uint32_t PDIoverJTAG::pdi_read(uint8_t *data, uint32_t length, int retries)
     for (i = 0 ; i <length; i++)
     {
 	uint8_t rev[3];
-        
+
         jtag->shiftDR(0, rev, 9);
         rev[2] = get_parity( rev[0]);
-        
+
         while((rev[2] != rev[1]) && (rev[0] == 0xeb) && (j <retries))
         {
             jtag->shiftDR(0, rev, 9);
@@ -87,7 +87,7 @@ uint32_t PDIoverJTAG::pdi_read(uint8_t *data, uint32_t length, int retries)
             j++;
             if (pdi_dbg)
                 fprintf(pdi_dbg, " %02x", rev[0]);
-                
+
         }
         if (j>0 && pdi_dbg)
             fprintf(pdi_dbg, "\n");
@@ -134,7 +134,7 @@ uint8_t PDIoverJTAG::get_parity(uint8_t data)
     int i;
 
     uint8_t p = 0;
-    
+
     for (i = 0; i < 8; i++)
 	if (data & (1 << i))
 	    p ^= 1;

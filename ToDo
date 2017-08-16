@@ -1,5 +1,5 @@
 - Use Bitarrays and not One-Byte-for-a-Bit in javr
-- AT90CAN reads back the flash as Bytes. With USB transfers, 
+- AT90CAN reads back the flash as Bytes. With USB transfers,
   this is damned slow. Provides some mechanism to queue read requests
 - Compress the XC3AN bit files and include into the binary
 - More cables
@@ -8,7 +8,7 @@
 - Other devices with published 1532 algorithm
 - Bitorder for Intel HEX format
 - Finer granularity for erasing XCFP
-- ... 
+- ...
 - Check Byte Order IHEX versus MCS
 - Document cable Database
 - Break possible infinite loops, like ProgAlgXC3S::array_program

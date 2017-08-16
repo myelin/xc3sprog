@@ -20,5 +20,5 @@ public:
     enum PDI_STATUS_CODE pdi_write
 	(const uint8_t *data, uint16_t length);
 };
-	
+
 #endif //PDIOVERJTAG_H

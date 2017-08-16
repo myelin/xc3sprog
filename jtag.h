@@ -62,7 +62,7 @@ class Jtag
     UPDATE_IR=15,
     UNKNOWN=999
   };
- 
+
  private:
   bool	      verbose;
   tapState_t  current_state;
@@ -105,7 +105,7 @@ class Jtag
   void Usleep(unsigned int usec) {io->Usleep(usec);}
   int selectDevice(int dev);
   void shiftDR(const byte *tdi, byte *tdo, int length, int align=0, bool exit=true);// Some devices use TCK for aligning data, for example, Xilinx FPGAs for configuration data.
-  void shiftIR(const byte *tdi, byte *tdo=0); // No length argumant required as IR length specified in chainParam_t 
+  void shiftIR(const byte *tdi, byte *tdo=0); // No length argumant required as IR length specified in chainParam_t
   inline void longToByteArray(unsigned long l, byte *b){
     b[0]=(byte)(l&0xff);
     b[1]=(byte)((l>>8)&0xff);

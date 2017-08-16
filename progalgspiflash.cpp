@@ -94,7 +94,7 @@ int ProgAlgSPIFlash::spi_flashinfo_spansion(unsigned char *buf){
 }
 
 
-int ProgAlgSPIFlash::spi_flashinfo_s33(unsigned char *buf) 
+int ProgAlgSPIFlash::spi_flashinfo_s33(unsigned char *buf)
 {
   fprintf(stderr, "Found Intel Device, Device ID 0x%02x%02x\n",
 	  buf[1], buf[2]);
@@ -119,25 +119,25 @@ int ProgAlgSPIFlash::spi_flashinfo_s33(unsigned char *buf)
       return -1;
     }
   pgsize = 256;
-  /* try to read the OTP Number */ 
+  /* try to read the OTP Number */
   buf[0]=0x4B;
   buf[1]=0x00;
   buf[2]=0x01;
   buf[3]=0x02;
-  
+
   spi_xfer_user1(NULL,0,0,buf,8, 4);
   spi_xfer_user1(buf, 8,4,NULL,0, 0);
-  
+
   fprintf(stderr,"Unique number: ");
   for (int i= 0; i<8 ; i++)
     fprintf(stderr,"%02x", buf[i]);
- 
+
   fprintf(stderr, " \n");
 
   return 1;
 }
 
-int ProgAlgSPIFlash::spi_flashinfo_amic(unsigned char *buf) 
+int ProgAlgSPIFlash::spi_flashinfo_amic(unsigned char *buf)
 {
   fprintf(stderr, "Found AMIC Device, Device ID 0x%02x%02x\n",
 	  buf[1], buf[2]);
@@ -174,7 +174,7 @@ int ProgAlgSPIFlash::spi_flashinfo_amic(unsigned char *buf)
   return 1;
 }
 
-int ProgAlgSPIFlash::spi_flashinfo_amic_quad(unsigned char *buf) 
+int ProgAlgSPIFlash::spi_flashinfo_amic_quad(unsigned char *buf)
 {
   fprintf(stderr, "Found AMIC Quad Device, Device ID 0x%02x%02x\n",
 	  buf[1], buf[2]);
@@ -193,7 +193,7 @@ int ProgAlgSPIFlash::spi_flashinfo_amic_quad(unsigned char *buf)
   return 1;
 }
 
-int ProgAlgSPIFlash::spi_flashinfo_w25(unsigned char *buf) 
+int ProgAlgSPIFlash::spi_flashinfo_w25(unsigned char *buf)
 {
   fprintf(stderr, "Found Winbond Device, Device ID 0x%02x%02x\n",
 	  buf[1], buf[2]);
@@ -237,22 +237,22 @@ int ProgAlgSPIFlash::spi_flashinfo_w25(unsigned char *buf)
     }
   pgsize = 256;
   sector_size = 4096; /* Bytes = 32 kiBits*/
-  sector_erase_cmd = 0x20; 
+  sector_erase_cmd = 0x20;
   if (buf[1] == 0x40)
     {
-      /* try to read the OTP Number */ 
+      /* try to read the OTP Number */
       buf[0]=0x4B;
       buf[1]=0x00;
       buf[2]=0x01;
       buf[3]=0x02;
-      
+
       spi_xfer_user1(NULL,0,0,buf,8, 4);
       spi_xfer_user1(buf, 8,4,NULL,0, 0);
-      
+
       fprintf(stderr,"Unique number: ");
       for (int i= 0; i<8 ; i++)
 	fprintf(stderr,"%02x", buf[i]);
-      
+
       fprintf(stderr, " \n");
     }
   return 1;
@@ -268,8 +268,8 @@ struct at45_t
     char chipname[12];
 };
 
-int ProgAlgSPIFlash::spi_flashinfo_at45(unsigned char *buf) 
- 
+int ProgAlgSPIFlash::spi_flashinfo_at45(unsigned char *buf)
+
 {
   byte fbuf[128];
   int idx;
@@ -284,35 +284,35 @@ int ProgAlgSPIFlash::spi_flashinfo_at45(unsigned char *buf)
           { 0x0f, 1056, 1024, 8192, 256, "AT45DB641"},
           { 0xff,    0,    0,    0,   0, "UNKNOWN"  }
       };
-  
+
   // read result
   fbuf[0]= AT45_READ_STATUS;
   spi_xfer_user1(NULL,0,0,fbuf, 2, 1);
-  
+
   // get status
   spi_xfer_user1(fbuf,2,1, NULL, 0, 0);
   fbuf[0] = bitRevTable[fbuf[0]];
   fbuf[1] = bitRevTable[fbuf[1]];
   fprintf(stderr, "status: %02x\n",fbuf[1]);
-      
+
   for(idx=0; idx < NUM_AT45;idx++) {
     if(at45chips[idx].id == ((fbuf[0]>>2)&0x0f))
       break;
   }
-  
+
   if(idx ==  NUM_AT45) {
     fprintf(stderr, "don't know that flash or status b0rken!\n");
     return -1;
   }
-  
+
   fprintf(stderr, "Found Atmel Device, Device ID 0x%02x%02x: %s\n",
 	  buf[1], buf[2], at45chips[idx].chipname);
   pgsize=at45chips[idx].pgsize;
   pages=at45chips[idx].pages;
   pages_per_sector = at45chips[idx].pages_per_sector;
   pages_per_block = 8;
-  
-  /* try to read the OTP Number */ 
+
+  /* try to read the OTP Number */
   fbuf[0]=0x77;
   fbuf[3]=fbuf[2]=fbuf[1]=0;
   spi_xfer_user1(NULL,0,0,fbuf,128, 4);
@@ -324,7 +324,7 @@ int ProgAlgSPIFlash::spi_flashinfo_at45(unsigned char *buf)
       if ((i & 0x1f) == 0x1f)
 	fprintf(stderr,"\n");
     }
- 
+
   return 1;
 }
 
@@ -503,38 +503,38 @@ int ProgAlgSPIFlash::spi_flashinfo_m25p_mx25l(unsigned char *buf, int is_mx25l)
          fprintf(stderr,"CFI: ");
          for (i= 5; i<21 ; i++)
            fprintf(stderr,"%02x", fbuf[i]);
-         
+
          fprintf(stderr, " \n");
        }
     }
   return 1;
 }
 
-int ProgAlgSPIFlash::spi_flashinfo(void) 
+int ProgAlgSPIFlash::spi_flashinfo(void)
 {
   byte fbuf[8]={READ_IDENTIFICATION, 0, 0, 0, 0, 0, 0, 0};
   int res;
-  
+
   // send JEDEC info
   spi_xfer_user1(NULL,0,0,fbuf,4,1);
 
-  /* FIXME: for some reason on the FT2232test board  
+  /* FIXME: for some reason on the FT2232test board
      with XC3S200 and AT45DB321 the commands need to be repeated*/
   spi_xfer_user1(NULL,0,0,fbuf,4,1);
-  
+
   // read result
   spi_xfer_user1(fbuf,4,1,NULL, 0, 0);
-  
+
   fbuf[0] = bitRevTable[fbuf[0]];
   fbuf[1] = bitRevTable[fbuf[1]];
   fbuf[2] = bitRevTable[fbuf[2]];
   fbuf[3] = bitRevTable[fbuf[3]];
   fprintf(stderr, "JEDEC: %02x %02x 0x%02x 0x%02x\n",
 	  fbuf[0],fbuf[1], fbuf[2], fbuf[3]);
-  
+
   manf_id = fbuf[0];
   prod_id = fbuf[1]<<8 | fbuf[2];
-  
+
   switch (fbuf[0])
     {
     case 0x01:
@@ -567,10 +567,10 @@ int ProgAlgSPIFlash::spi_flashinfo(void)
       res = spi_flashinfo_m25p_mx25l(fbuf, 1);
       break;
     case 0x89:
-      res = spi_flashinfo_s33(fbuf); 
+      res = spi_flashinfo_s33(fbuf);
       break;
     case 0xef:
-      res = spi_flashinfo_w25(fbuf); 
+      res = spi_flashinfo_w25(fbuf);
       break;
     case 0xbf:
       res = spi_flashinfo_sst(fbuf);
@@ -590,21 +590,21 @@ int ProgAlgSPIFlash::spi_flashinfo(void)
   return res;
 }
 
-void ProgAlgSPIFlash::test(int test_count) 
+void ProgAlgSPIFlash::test(int test_count)
 {
   int i;
-  
+
   fprintf(stderr, "Running %d  times\n", test_count);
   for(i=0; i<test_count; i++)
     {
       byte fbuf[4]= {READ_IDENTIFICATION, 0, 0, 0};
-     
+
       // send JEDEC info
       spi_xfer_user1(NULL,0,0,fbuf,4,1);
-      
+
       // read result
       spi_xfer_user1(fbuf,4,1,NULL, 0, 0);
-      
+
       fflush(stderr);
       if(i%1000 == 999)
 	{
@@ -616,10 +616,10 @@ void ProgAlgSPIFlash::test(int test_count)
 
 int ProgAlgSPIFlash::spi_xfer_user1
 (uint8_t *last_miso, int miso_len,int miso_skip, uint8_t *mosi,
- int mosi_len, int preamble) 
+ int mosi_len, int preamble)
 {
   int cnt, rc, maxlen = miso_len+miso_skip;
-  
+
   if(mosi) {
     if(mosi_len + preamble + 4 + 2 > maxlen)
       maxlen = mosi_len + preamble + 4 + 2;
@@ -628,30 +628,30 @@ int ProgAlgSPIFlash::spi_xfer_user1
     mosi_buf[1]=0xa6;
     mosi_buf[2]=0x59;
     mosi_buf[3]=0xa6;
-    
+
     // SPI len (bits)
     mosi_buf[4]=((mosi_len + preamble)*8)>>8;
     mosi_buf[5]=((mosi_len + preamble)*8)&0xff;
-    
+
     // bit-reverse header
     for(cnt=0;cnt<6;cnt++)
       mosi_buf[cnt]=bitRevTable[mosi_buf[cnt]];
-    
+
     // bit-reverse preamble
     for(cnt=6;cnt<6+preamble;cnt++)
       mosi_buf[cnt]=bitRevTable[mosi[cnt-6]];
-    
+
     memcpy(mosi_buf+6+preamble, mosi+preamble, mosi_len);
   }
-  
-  
+
+
   rc=xc_user((mosi)?mosi_buf:NULL,(last_miso)?miso_buf:NULL, maxlen*8);
-  
-  if(last_miso && miso_len) 
+
+  if(last_miso && miso_len)
     {
       memcpy(last_miso, miso_buf+miso_skip, miso_len);
     }
-  
+
   if(fp_dbg)
   {
       if (mosi && (preamble || mosi_len))
@@ -667,7 +667,7 @@ int ProgAlgSPIFlash::spi_xfer_user1
               for (i=preamble; i<(preamble +mosi_len) && i< 32; i++)
                   fprintf(fp_dbg," %02x", mosi[i]);
               if((preamble +mosi_len)> 32)
-                fprintf(fp_dbg,"...");  
+                fprintf(fp_dbg,"...");
           }
           fprintf(fp_dbg,"\n");
       }
@@ -706,7 +706,7 @@ void page2padd(byte *buf, int page, int pgsize)
       page<<=2;
     else if (pgsize > 256)
       page<<=1;
-    
+
     buf[1] = page >> 8;
     buf[2] = page & 0xff;
     buf[3] = 0;
@@ -716,7 +716,7 @@ void page2padd(byte *buf, int page, int pgsize)
  * Writing of bitfile will delete trailing 0xff's
  */
 
-int ProgAlgSPIFlash::read(BitFile &rfile) 
+int ProgAlgSPIFlash::read(BitFile &rfile)
 {
     unsigned int offset, len , data_end, i, rc=0;
     unsigned int rlen;
@@ -750,12 +750,12 @@ int ProgAlgSPIFlash::read(BitFile &rfile)
     {
         if (i < data_end) /* Read last page */
             rlen = ((data_end - i) > pgsize)? pgsize: data_end - i;
-        
+
         if(jtag->getVerbose())
         {
             fprintf(stderr, "\rReading page %6d/%6d at flash page %6d",
-                    (l+ 2*pgsize -1)/pgsize , (len+pgsize -1)/pgsize, 
-                    (i+pgsize -1)/pgsize); 
+                    (l+ 2*pgsize -1)/pgsize , (len+pgsize -1)/pgsize,
+                    (i+pgsize -1)/pgsize);
             fflush(stderr);
         }
         page2padd(buf, i/pgsize, pgsize);
@@ -767,27 +767,27 @@ int ProgAlgSPIFlash::read(BitFile &rfile)
             spi_xfer_user1(rfile.getData()+l, pgsize, 4, buf, rlen, 4);
         l+= pgsize;
     }
-  
+
     fprintf(stderr, "\n");
     return rc;
 }
 
 /* return 0 on success, anything else on failure */
 
-int ProgAlgSPIFlash::verify(BitFile &vfile) 
+int ProgAlgSPIFlash::verify(BitFile &vfile)
 {
     unsigned int i, offset, data_end, res, k=0;
     unsigned int rlen;
     int l, len = vfile.getLength()/8;
     byte *data = new byte[pgsize];
     byte buf[4] = {PAGE_READ, 0,0,0};
-    
+
     if (data == 0 || len == 0)
     {
         fprintf(stderr,"Program start outside PROM area, aborting\n");
         return -1;
     }
-    
+
     offset = (vfile.getOffset()/pgsize)*pgsize;
     if (offset > pages* pgsize)
     {
@@ -818,7 +818,7 @@ int ProgAlgSPIFlash::verify(BitFile &vfile)
         if (i < data_end) /* Read last page */
             rlen = ((data_end - i) > pgsize)? pgsize: data_end - i;
         page2padd(buf, i/pgsize, pgsize);
-        // get: flash_page n-1, send: read flashpage n             
+        // get: flash_page n-1, send: read flashpage n
         res=spi_xfer_user1(data, pgsize, 4, buf, rlen, 4);
         if (l >= 0) /* don't compare when sending first page*/
         {
@@ -826,10 +826,10 @@ int ProgAlgSPIFlash::verify(BitFile &vfile)
             {
                 fprintf(stderr, "\rVerifying page %6d/%6d at flash page %6d",
                         (i - offset +pgsize-1)/pgsize, (len +pgsize -1)/pgsize,
-                        (i + pgsize -1)/pgsize ); 
+                        (i + pgsize -1)/pgsize );
                 fflush(stderr);
             }
-            res=memcmp(data, vfile.getData()+ l, rlen); 
+            res=memcmp(data, vfile.getData()+ l, rlen);
             if (res)
             {
                 unsigned int j;
@@ -841,7 +841,7 @@ int ProgAlgSPIFlash::verify(BitFile &vfile)
                 for(j =0; j<pgsize; j++)
                     fprintf(stderr, "%02x", vfile.getData()[l+j]);
                 fprintf(stderr, "\n");
-                
+
                 if(k>5)
                 {
                     goto v_cleanup;
@@ -887,7 +887,7 @@ int ProgAlgSPIFlash::wait(byte command, int report, int limit, double *delta)
     /* wait for command complete */
     do
     {
-        jtag->Usleep(1000);       
+        jtag->Usleep(1000);
         spi_xfer_user1(rbuf,1,1,fbuf, 1, 1);
         j++;
         if ((jtag->getVerbose()) &&((j%report) == (report -1)))
@@ -922,7 +922,7 @@ int ProgAlgSPIFlash::wait(byte command, byte mask, byte value, int report, int l
     /* wait for command complete */
     do
     {
-        jtag->Usleep(1000);       
+        jtag->Usleep(1000);
         spi_xfer_user1(rbuf,1,1,fbuf, 1, 1);
         j++;
         if ((jtag->getVerbose()) &&((j%report) == (report -1)))
@@ -940,7 +940,7 @@ int ProgAlgSPIFlash::wait(byte command, byte mask, byte value, int report, int l
 }
 
 
-int ProgAlgSPIFlash::sectorerase_and_program(BitFile &pfile) 
+int ProgAlgSPIFlash::sectorerase_and_program(BitFile &pfile)
 {
   unsigned int i, offset, data_end, data_page = 0;
   byte fbuf[4];
@@ -956,14 +956,14 @@ int ProgAlgSPIFlash::sectorerase_and_program(BitFile &pfile)
       fprintf(stderr,"Sourcefile empty, aborting\n");
       return -1;
   }
-    
+
   offset = (pfile.getOffset()/pgsize)*pgsize;
   if (offset > pages *pgsize)
   {
       fprintf(stderr,"Program start outside PROM area, aborting\n");
       return -1;
   }
-  
+
   if (pfile.getRLength() != 0)
   {
       data_end = offset + pfile.getRLength();
@@ -981,7 +981,7 @@ int ProgAlgSPIFlash::sectorerase_and_program(BitFile &pfile)
   }
   for(i = offset ; i < data_end; i+= pgsize)
     {
-      unsigned int rlen = ((data_end -i) > pgsize) ? pgsize : 
+      unsigned int rlen = ((data_end -i) > pgsize) ? pgsize :
           (data_end -i);
       /* Find out if sector needs to be erased*/
       if (sector_nr   <= i/sector_size)
@@ -995,8 +995,8 @@ int ProgAlgSPIFlash::sectorerase_and_program(BitFile &pfile)
           page2padd(fbuf, i/pgsize, pgsize);
           spi_xfer_user1(NULL,0,0,fbuf, 0, 4);
 	  if(jtag->getVerbose())
-              fprintf(stderr,"\rErasing sector %2d/%2d", 
-                      sector_nr, 
+              fprintf(stderr,"\rErasing sector %2d/%2d",
+                      sector_nr,
                       (data_end + sector_size + 1)/sector_size);
           j = wait(READ_STATUS_REGISTER, 100, 3000, &delta);
 	  if(j != 0)
@@ -1014,8 +1014,8 @@ int ProgAlgSPIFlash::sectorerase_and_program(BitFile &pfile)
        {
            fprintf(stderr, "\r\t\t\tWriting data page %6d/%6d",
                    (i - offset + pgsize -1)/pgsize, (len + pgsize -1)/pgsize);
-                   fprintf(stderr, " at flash page %6d", 
-                           (i + pgsize -1)/pgsize); 
+                   fprintf(stderr, " at flash page %6d",
+                           (i + pgsize -1)/pgsize);
          fflush(stderr);
        }
 
@@ -1029,7 +1029,7 @@ int ProgAlgSPIFlash::sectorerase_and_program(BitFile &pfile)
       j = wait(READ_STATUS_REGISTER, 1, 50, &delta);
       if(j != 0)
        {
-         fprintf(stderr,"\nPage Program failed for flashpage %6d\n", 
+         fprintf(stderr,"\nPage Program failed for flashpage %6d\n",
                  i/pgsize +1);
          return -1;
        }
@@ -1037,7 +1037,7 @@ int ProgAlgSPIFlash::sectorerase_and_program(BitFile &pfile)
 	{
 	  if (delta > max_page_program)
 	    max_page_program= delta;
-	  
+
 	}
       data_page++;
     }
@@ -1208,7 +1208,7 @@ int ProgAlgSPIFlash::erase_sst()
 
 
 
-int ProgAlgSPIFlash::program(BitFile &pfile) 
+int ProgAlgSPIFlash::program(BitFile &pfile)
 {
   unsigned int len = pfile.getLength()/8;
   if( len >(pgsize*pages))
@@ -1234,21 +1234,21 @@ int ProgAlgSPIFlash::program(BitFile &pfile)
   }
   return -1;
 }
-    
+
 int ProgAlgSPIFlash::program_at45(BitFile &pfile)
 {
     int len = pfile.getLength()/8;
     unsigned int i, offset, data_end, data_page= 0;
     double max_page_program = 0.0;
     double delta;
-    
+
     offset = (pfile.getOffset()/pgsize)*pgsize;
     if (offset > pages *pgsize)
     {
         fprintf(stderr,"Program start outside PROM area, aborting\n");
         return -1;
     }
-    
+
     if (pfile.getRLength() != 0)
     {
         data_end = offset + pfile.getRLength();
@@ -1268,17 +1268,17 @@ int ProgAlgSPIFlash::program_at45(BitFile &pfile)
     for(i = offset ; i < data_end; i+= pgsize)
     {
         unsigned int j;
-        unsigned int rlen = ((data_end -i) > pgsize) ? pgsize : 
+        unsigned int rlen = ((data_end -i) > pgsize) ? pgsize :
             (data_end -i);
         if(jtag->getVerbose())
         {
             fprintf(stderr, "\r\t\t\tWriting data page %6d/%6d",
                     (i - offset + pgsize -1)/pgsize, (len + pgsize -1)/pgsize);
-            fprintf(stderr, " at flash page %6d", 
-                    (i + pgsize -1)/pgsize); 
+            fprintf(stderr, " at flash page %6d",
+                    (i + pgsize -1)/pgsize);
             fflush(stderr);
         }
-        
+
         page2padd(buf, i/pgsize, pgsize);
         memcpy(buf+4,&pfile.getData()[i-offset], rlen);
         spi_xfer_user1(NULL,0,0,buf, rlen, 4);
@@ -1286,7 +1286,7 @@ int ProgAlgSPIFlash::program_at45(BitFile &pfile)
         j = wait(AT45_READ_STATUS, 1, 35, &delta);
         if(j != 0)
         {
-            fprintf(stderr,"\nPage Program failed for flashpage %6d\n", 
+            fprintf(stderr,"\nPage Program failed for flashpage %6d\n",
                     i/pgsize +1);
             return -1;
         }
@@ -1294,11 +1294,11 @@ int ProgAlgSPIFlash::program_at45(BitFile &pfile)
         {
             if (delta > max_page_program)
                 max_page_program= delta;
-	  
+
 	}
         data_page++;
     }
- 
+
     return 0;
 }
 
@@ -1313,7 +1313,7 @@ int ProgAlgSPIFlash::erase_bulk(void)
     fbuf[0] = bitRevTable[fbuf[0]];
     fbuf[1] = bitRevTable[fbuf[1]];
     if (fbuf[1] & (BP0 | BP1 | BP2))
-    { 
+    {
         fprintf(stderr, "Can't erase, device has block protection%s%s%s\n",
                 (fbuf[1]& BP0)? " BP0":"",
                 (fbuf[1]& BP1)? " BP1":"",
@@ -1334,7 +1334,7 @@ int ProgAlgSPIFlash::erase_bulk(void)
         fprintf(stderr,"\nBulk erase failed\n");
         return -1;
     }
-    
+
     if(jtag->getVerbose())
     {
         fprintf(stderr," took %.3f s\n", delta/1.0e6);
@@ -1370,7 +1370,7 @@ int ProgAlgSPIFlash::erase_at45(void)
         fbuf[3] = 0;
         page2padd(fbuf, page, pgsize);
         if(jtag->getVerbose())
-	    fprintf(stderr,"\rErasing sector %2d%c", 
+	    fprintf(stderr,"\rErasing sector %2d%c",
                     page/pages_per_sector,
                     (page == 0)?'a':(page ==pages_per_block)?'b':' '
                 );
@@ -1397,7 +1397,7 @@ int ProgAlgSPIFlash::erase_at45(void)
 	      max_sector_erase/1.0e6);
     return 0;
 
-   
+
       // get status
 //  spi_xfer_user1(fbuf,2,1, NULL, 0, 0);
 //  fbuf[0] = bitRevTable[fbuf[0]);
@@ -1406,7 +1406,7 @@ int ProgAlgSPIFlash::erase_at45(void)
   return -1;
 }
 
-int ProgAlgSPIFlash::erase(void) 
+int ProgAlgSPIFlash::erase(void)
 {
   switch (manf_id) {
   case 0x1f: /* Atmel */
