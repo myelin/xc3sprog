@@ -78,6 +78,7 @@ Dmitry Teytelman [dimtey@gmail.com] 14 Jun 2006 [applied 13 Aug 2006]:
 #  define PPDEV "\\\\.\\$VDMLPT1"
 #endif
 #include <windows.h>
+#include <initguid.h>
 #include <ntddpar.h>
 #include "par_nt.h"
 
@@ -318,9 +319,9 @@ int IOParport::Init(struct cable_t *cable, const char *dev, unsigned int freq)
   // Try to open parport device
   if((fd = open(dev, O_RDWR)) == -1)
 #elif defined(__WIN32__)
-    if ((fd = (int)CreateFile(dev, GENERIC_READ | GENERIC_WRITE,
+    if ((fd = CreateFile(dev, GENERIC_READ | GENERIC_WRITE,
 			      0, NULL, OPEN_EXISTING, 0, NULL))
-	== (int)INVALID_HANDLE_VALUE)
+	== INVALID_HANDLE_VALUE)
 #endif
       {
 	fprintf(stderr,"Could not access parallel device '%s': %s\n",
@@ -476,7 +477,7 @@ IOParport::~IOParport()
 #define XC3S_EIO 1
 #define XC3S_ENIMPL 2
 
-int IOParport::write_data(int fd, unsigned char data)
+int IOParport::write_data(FD_HANDLE fd, unsigned char data)
 {
     int status;
 #ifdef __linux__
@@ -496,7 +497,7 @@ int IOParport::write_data(int fd, unsigned char data)
 }
 
 
-int IOParport::write_control(int fd, unsigned char control)
+int IOParport::write_control(FD_HANDLE fd, unsigned char control)
 {
     int status;
 #ifdef __linux__
@@ -518,7 +519,7 @@ int IOParport::write_control(int fd, unsigned char control)
 #endif
 }
 
-int IOParport::read_control(int fd, unsigned char *control)
+int IOParport::read_control(FD_HANDLE fd, unsigned char *control)
 {
     int status;
 #ifdef __linux
@@ -539,7 +540,7 @@ int IOParport::read_control(int fd, unsigned char *control)
 #endif
 }
 
-int IOParport::read_status(int fd, unsigned char *status)
+int IOParport::read_status(FD_HANDLE fd, unsigned char *status)
 {
     int ret;
 #ifdef __linux__

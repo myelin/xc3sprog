@@ -30,16 +30,26 @@ Dmitry Teytelman [dimtey@gmail.com] 14 Jun 2006 [applied 13 Aug 2006]:
 #define IOPARPORT_H
 
 #include "iobase.h"
+#if defined (__WIN32__)
+# include <windows.h>
+# if !defined(HANDLE)
+#  define HANDLE void*
+# endif
+# define FD_HANDLE HANDLE
+#else
+# define FD_HANDLE int
+#endif
 
 class IOParport : public IOBase
 {
  protected:
-  int fd, total, cabletype, debug;
+  FD_HANDLE fd;
+  int total, cabletype, debug;
   unsigned char def_byte, tdi_value, tms_value, tck_value, tdo_mask, tdo_inv;
-  int write_data(int fd, unsigned char data);
-  int write_control(int fd, unsigned char control);
-  int read_control(int fd, unsigned char *control);
-  int read_status(int fd, unsigned char *status);
+  int write_data(FD_HANDLE fd, unsigned char data);
+  int write_control(FD_HANDLE fd, unsigned char control);
+  int read_control(FD_HANDLE fd, unsigned char *control);
+  int read_status(FD_HANDLE fd, unsigned char *status);
 
  public:
   IOParport();
