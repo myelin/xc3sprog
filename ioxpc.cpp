@@ -156,7 +156,8 @@ int IOXPC::Init(struct cable_t *cable, char const *serial, unsigned int freq)
     {
       unsigned char zero[2] = {0,0};
       
-      r = xpcu_request_28(xpcu, 0x11);
+      r = xpcu_output_enable(xpcu, 0);
+      if (r>=0) r = xpcu_request_28(xpcu, 0x11);
       if (r>=0) r = xpcu_output_enable(xpcu, 1);
       if (r>=0) r = xpcu_shift(xpcu, 0xA6, 2, 2, zero, 0, NULL);
       if (r>=0) r = xpcu_request_28(xpcu, 0x12);
