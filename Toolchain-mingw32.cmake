@@ -7,9 +7,10 @@ SET(MINGW_VER i686-w64-mingw32)
 SET(CMAKE_C_COMPILER ${MINGW_VER}-gcc)
 SET(CMAKE_CXX_COMPILER ${MINGW_VER}-g++)
 SET(CMAKE_RC_COMPILER ${MINGW_VER}-windres)
+SET(PKG_CONFIG_EXECUTABLE ${MINGW_VER}-pkg-config)
 
 # here is the target environment located
-SET(CMAKE_FIND_ROOT_PATH  /usr/i686-w64-mingw32/sys-root/mingw )
+SET(CMAKE_FIND_ROOT_PATH /usr/${MINGW_VER} )
 
 # adjust the default behaviour of the FIND_XXX() commands:
 # search headers and libraries in the target environment, search

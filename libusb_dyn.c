@@ -24,7 +24,7 @@
 #endif
 
 #include <stdio.h>
-#include <libusb/usb.h>
+#include <libusb0/usb.h>
 #include <errno.h>
 
 
