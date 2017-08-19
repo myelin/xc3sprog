@@ -50,7 +50,7 @@ int IOJLink::Init(struct cable_t *cable, char const *serial, unsigned int freq)
   }
 
   struct jaylink_device **devices;
-  ssize_t n_devices = jaylink_get_device_list(context, &devices);
+  ssize_t n_devices = jaylink_get_devices(context, &devices, NULL);
   if (!n_devices) {
     fprintf(stderr, "No J-Link devices found\n");
     return 1;
@@ -65,7 +65,7 @@ int IOJLink::Init(struct cable_t *cable, char const *serial, unsigned int freq)
     }
   }
 
-  jaylink_free_device_list(devices, 1);
+  jaylink_free_devices(devices, 1);
 
   if (device == NULL) {
     fprintf(stderr, "Unable to find attached JLink device.\n");
@@ -78,16 +78,16 @@ int IOJLink::Init(struct cable_t *cable, char const *serial, unsigned int freq)
     return 1;
   }
 
-  uint32_t jl_freq;
-  uint16_t jl_div;
-  rc = jaylink_get_speeds(device, &jl_freq, &jl_div);
+  struct jaylink_speed jl_speed;
+  rc = jaylink_get_speeds(device, &jl_speed);
   if (rc != JAYLINK_OK) {
     fprintf(stderr, "jaylink_get_speeds: %s\n", jaylink_strerror_name(rc));
     return 1;
   }
-  fprintf(stderr, "J-Link speed caps: freq=%d, divider=%d, i.e. max speed=%d kHz\n", jl_freq, jl_div, jl_freq / jl_div / 1000);
-  if (jl_freq / jl_div < freq) {
-    freq = jl_freq / jl_div;
+  fprintf(stderr, "J-Link speed caps: freq=%d, divider=%d, i.e. max speed=%d kHz\n",
+    jl_speed.freq, jl_speed.div, jl_speed.freq / jl_speed.div / 1000);
+  if (jl_speed.freq / jl_speed.div < freq) {
+    freq = jl_speed.freq / jl_speed.div;
   }
 
   fprintf(stderr, "J-Link: setting speed to %d kHz\n", freq / 1000);
@@ -140,7 +140,7 @@ void IOJLink::txrx_block(const unsigned char *tdi, unsigned char *tdo,
   }
 
   // Actually perform the JTAG I/O operation...
-  int rc = jaylink_jtag_io(device, tms, tdi, tdo, length, JAYLINK_JTAG_V3);
+  int rc = jaylink_jtag_io(device, tms, tdi, tdo, length, JAYLINK_JTAG_VERSION_3);
   if (rc != JAYLINK_OK) {
     fprintf(stderr, "jaylink_jtag_io: %s\n", jaylink_strerror_name(rc));
     exit(1);
@@ -170,7 +170,7 @@ void IOJLink::tx_tms(unsigned char *pat, int length, int force)
   uint8_t tdo[tms_length];
 
   // Actually perform the JTAG I/O operation...
-  int rc = jaylink_jtag_io(device, pat, tdi, tdo, length, JAYLINK_JTAG_V3);
+  int rc = jaylink_jtag_io(device, pat, tdi, tdo, length, JAYLINK_JTAG_VERSION_3);
   if (rc != JAYLINK_OK) {
     fprintf(stderr, "jaylink_jtag_io: %s\n", jaylink_strerror_name(rc));
     exit(1);
