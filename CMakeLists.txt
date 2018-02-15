@@ -22,6 +22,7 @@ option(USE_FTD2XX "Use FTDI libFTD2XX instead of free libftdi" ON)
 
 pkg_check_modules(LIBFTDI REQUIRED libftdi1)
 include_directories(${LIBFTDI_INCLUDE_DIRS})
+link_directories(${LIBFTDI_LIBRARY_DIRS})
 
 if(USE_FTD2XX)
   find_package(libFTD2XX)
@@ -99,7 +100,8 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
    set (CONDITIONAL_FILES ${CONDITIONAL_FILES} "libusb_dyn.c")
 else("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
    pkg_check_modules(LIBUSB_COMPAT REQUIRED libusb)
-   include_directories(${LIBUSB_INCLUDE_DIRS})
+   include_directories(${LIBUSB_COMPAT_INCLUDE_DIRS})
+   link_directories(${LIBUSB_COMPAT_LIBRARY_DIRS})
    set(CONDITIONAL_LIBS ${CONDITIONAL_LIBS} usb usb-1.0)
 
 endif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
