@@ -4,9 +4,18 @@ compiler:
   - gcc
   - clang
 
+# libftdi1-dev isn't present on ubuntu trusty, so we have to build libftdi1 from source
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libusb-dev libftdi1-dev
+  - sudo apt-get install -y libusb-dev libusb-1.0-0-dev
+  - wget https://www.intra2net.com/en/developer/libftdi/download/libftdi1-1.4.tar.bz2
+  - tar -vjxf libftdi1-1.4.tar.bz2
+  - cd libftdi1-1.4
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - sudo make install
 
 before_script:
   - mkdir build
