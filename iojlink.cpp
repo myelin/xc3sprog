@@ -1,8 +1,24 @@
 /* JTAG low-level I/O to JLink
 
-Using the libjaylink library
+Using the libjaylink library.  Initialization sequence from OpenOCD.
 
 Copyright (C) 2005-2011 Uwe Bonnes bon@elektron.ikp.physik.tu-darmstadt.de
+
+Copyright (C) 2007 by Juergen Stuber <juergen@jstuber.net>
+based on Dominic Rath's and Benedikt Sauter's usbprog.c
+
+Copyright (C) 2008 by Spencer Oliver
+spen@spen-soft.co.uk
+
+Copyright (C) 2011 by Jean-Christophe PLAGNIOL-VIILARD
+plagnioj@jcrosoft.com
+
+Copyright (C) 2015 by Marc Schink
+openocd-dev@marcschink.de
+
+Copyright (C) 2015 by Paul Fertser
+fercerpav@gmail.com
+
 Copyright (C) 2017 Google Inc, philpearson@google.com
 
 This program is free software; you can redistribute it and/or modify
@@ -41,7 +57,14 @@ IOJLink::IOJLink()
 int IOJLink::Init(struct cable_t *cable, char const *serial, unsigned int freq)
 {
   int rc;
-  fprintf(stderr, "Connecting to J-Link\n");
+
+  fprintf(stderr, "Connecting to J-Link (libjaylink %s)\n",
+    jaylink_version_package_get_string());
+
+  if (!jaylink_library_has_cap(JAYLINK_CAP_HIF_USB)) {
+    fprintf(stderr, "J-Link driver does not support USB devices.");
+    return 1;
+  }
 
   rc = jaylink_init(&context);
   if (rc != JAYLINK_OK) {
@@ -49,10 +72,16 @@ int IOJLink::Init(struct cable_t *cable, char const *serial, unsigned int freq)
     return 1;
   }
 
+  rc = jaylink_discovery_scan(context, JAYLINK_HIF_USB);
+  if (rc != JAYLINK_OK) {
+    fprintf(stderr, "jaylink_discovery_scan: %s.", jaylink_strerror_name(rc));
+    return 1;
+  }
+
   struct jaylink_device **devices;
-  ssize_t n_devices = jaylink_get_devices(context, &devices, NULL);
-  if (!n_devices) {
-    fprintf(stderr, "No J-Link devices found\n");
+  rc = jaylink_get_devices(context, &devices, NULL);
+  if (rc != JAYLINK_OK) {
+    fprintf(stderr, "jaylink_get_devices: %s\n", jaylink_strerror_name(rc));
     return 1;
   }
 
@@ -106,7 +135,7 @@ IOJLink::~IOJLink()
 }
 
 void IOJLink::txrx_block(const unsigned char *tdi, unsigned char *tdo,
-		       int length, bool last)
+                         int length, bool last)
 {
 #ifdef IOJLINK_VERBOSE
   fprintf(stderr, "jlink txrx_block %d bits last=%d:", length, last);
