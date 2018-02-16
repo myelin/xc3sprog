@@ -24,10 +24,17 @@ pkg_check_modules(LIBFTDI REQUIRED libftdi1)
 include_directories(${LIBFTDI_INCLUDE_DIRS})
 link_directories(${LIBFTDI_LIBRARY_DIRS})
 
-find_package(libjaylink)
-if(LIBJAYLINK_FOUND)
-  include_directories(${LIBJAYLINK_INCLUDE_DIR})
-endif(LIBJAYLINK_FOUND)
+include(ExternalProject)
+ExternalProject_Add(libjaylink
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libjaylink
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libjaylink/configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/libjaylink
+  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/libjaylink
+  BUILD_COMMAND make
+  BUILD_ALWAYS true
+)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libjaylink/libjaylink)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/libjaylink/src/libjaylink-build/libjaylink)
+set(LIBJAYLINK_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/libjaylink/lib/libjaylink.a)
 
 if(USE_FTD2XX)
   find_package(libFTD2XX)
@@ -149,6 +156,7 @@ add_library(xc3sproglib  STATIC ioftdi.cpp iofx2.cpp
                         cabledb.cpp pdioverjtag.cpp xmega_pdi_nvm.cpp
                         iojlink.cpp
                         ${CONDITIONAL_FILES} devices.h cables.h)
+add_dependencies(xc3sproglib libjaylink)
 
 add_executable(xc2c_warp xc2c_warp.cpp)
 target_link_libraries(xc2c_warp xc3sproglib ${CONDITIONAL_LIBS})
