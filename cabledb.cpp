@@ -171,6 +171,7 @@ const char *CableDB::getCableName(const CABLES_TYPES type )
     case CABLE_FX2: return  "fx2";
     case CABLE_XPC: return "xpc";
     case CABLE_JLINK: return "jlink";
+    case CABLE_UBLAST: return "ublast";
     case CABLE_NONE: return "none";
     case CABLE_UNKNOWN: return "unknown";
     }
