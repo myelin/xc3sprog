@@ -31,7 +31,8 @@ enum CABLES_TYPES
     CABLE_FTDI,
     CABLE_FX2,
     CABLE_XPC,
-    CABLE_JLINK
+    CABLE_JLINK,
+    CABLE_UBLAST
   };
 
 struct cable_t

@@ -12,6 +12,7 @@
 #include "ioftdi.h"
 #include "iojlink.h"
 #include "ioxpc.h"
+#include "ioublast.h"
 #include "utilities.h"
 
 extern char *optarg;
@@ -88,6 +89,12 @@ int  getIO( std::auto_ptr<IOBase> *io, struct cable_t * cable, char const *dev,
   else if(cable->cabletype == CABLE_JLINK)
   {
       io->reset(new IOJLink());
+      io->get()->setVerbose(verbose);
+      res = io->get()->Init(cable, serial, use_freq);
+  }
+  else if(cable->cabletype == CABLE_UBLAST)
+  {
+      io->reset(new IOUblast());
       io->get()->setVerbose(verbose);
       res = io->get()->Init(cable, serial, use_freq);
   }
@@ -174,4 +181,3 @@ std::vector<std::string> splitString(const std::string& s, char delim)
     }
   return res;
 }
-

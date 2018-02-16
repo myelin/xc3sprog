@@ -148,6 +148,7 @@ add_library(xc3sproglib  STATIC ioftdi.cpp iofx2.cpp
 			ioxpc.cpp progalgspiflash.cpp bitrev.cpp
                         cabledb.cpp pdioverjtag.cpp xmega_pdi_nvm.cpp
                         iojlink.cpp
+                        ioublast.cpp ublast_access_ftdi.cpp
                         ${CONDITIONAL_FILES} devices.h cables.h)
 
 add_executable(xc2c_warp xc2c_warp.cpp)
