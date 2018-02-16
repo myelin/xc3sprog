@@ -8,6 +8,9 @@ compiler:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libusb-dev libusb-1.0-0-dev
+  - cd $TRAVIS_BUILD_DIR
+  - mkdir libftdi-build
+  - cd libftdi-build
   - wget https://www.intra2net.com/en/developer/libftdi/download/libftdi1-1.4.tar.bz2
   - tar -vjxf libftdi1-1.4.tar.bz2
   - cd libftdi1-1.4
@@ -18,8 +21,11 @@ before_install:
   - sudo make install
 
 before_script:
+  - cd $TRAVIS_BUILD_DIR
   - mkdir build
   - cd build
   - cmake ..
 
-script: make
+script:
+  - cd $TRAVIS_BUILD_DIR/build
+  - make
