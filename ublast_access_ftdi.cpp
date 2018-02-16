@@ -1,6 +1,7 @@
 /*
  *   Driver for USB-JTAG, Altera USB-Blaster and compatibles
  *
+ *   Ported from OpenOCD.
  *   Inspired from original code from Kolja Waschk's USB-JTAG project
  *   (http://www.ixo.de/info/usb_jtag/), and from openocd project.
  *
@@ -27,15 +28,13 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include <jtag/interface.h>
-#include <jtag/commands.h>
 
 #include "ublast_access.h"
 #include <ftdi.h>
 
 static struct ftdi_context *ublast_getftdic(struct ublast_lowlevel *low)
 {
-	return low->priv;
+	return (struct ftdi_context *)low->priv;
 }
 
 static int ublast_ftdi_read(struct ublast_lowlevel *low, uint8_t *buf,

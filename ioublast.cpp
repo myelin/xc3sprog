@@ -1,9 +1,11 @@
 /*
  *   Driver for USB-JTAG, Altera USB-Blaster and compatibles
  *
+ *   Ported from OpenOCD.
  *   Inspired from original code from Kolja Waschk's USB-JTAG project
  *   (http://www.ixo.de/info/usb_jtag/), and from openocd project.
  *
+ *   Copyright (C) 2018 Google LLC philpearson@google.com
  *   Copyright (C) 2013 Franck Jullien franck.jullien@gmail.com
  *   Copyright (C) 2012 Robert Jarzmik robert.jarzmik@free.fr
  *   Copyright (C) 2011 Ali Lown ali@lown.me.uk
@@ -64,27 +66,15 @@
  *           |_____________|
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#if IS_CYGWIN == 1
-#include "windows.h"
-#undef LOG_ERROR
-#endif
-
-/* project specific includes */
-#include <jtag/interface.h>
-#include <jtag/commands.h>
-#include <helper/time_support.h>
-#include "ublast_access.h"
-
 /* system includes */
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/time.h>
 #include <time.h>
+
+#include "ioublast.h"
+#include "ublast_access.h"
 
 /* Size of USB endpoint max packet size, ie. 64 bytes */
 #define MAX_PACKET_SIZE 64
@@ -142,7 +132,7 @@ static struct ublast_info info = {
  * Available lowlevel drivers (FTDI, FTD2xx, ...)
  */
 struct drvs_map {
-	char *name;
+	const char *name;
 	struct ublast_lowlevel *(*drv_register)(void);
 };
 
@@ -156,13 +146,17 @@ static struct drvs_map lowlevel_drivers_map[] = {
 	{ NULL, NULL },
 };
 
+IOUblast::IOUblast()
+{
+}
+
 /*
  * Access functions to lowlevel driver, agnostic of libftdi/libftdxx
  */
 static char *hexdump(uint8_t *buf, unsigned int size)
 {
 	unsigned int i;
-	char *str = calloc(size * 2 + 1, 1);
+	char *str = (char *)calloc(size * 2 + 1, 1);
 
 	for (i = 0; i < size; i++)
 		sprintf(str + 2*i, "%02x", buf[i]);
@@ -312,22 +306,6 @@ static uint8_t ublast_build_out(enum scan_type type)
 }
 
 /**
- * ublast_reset - reset the JTAG device is possible
- * @trst: 1 if TRST is to be asserted
- * @srst: 1 if SRST is to be asserted
- */
-static void ublast_reset(int trst, int srst)
-{
-	uint8_t out_value;
-
-	info.trst_asserted = trst;
-	info.srst_asserted = srst;
-	out_value = ublast_build_out(SCAN_OUT);
-	ublast_queue_byte(out_value);
-	ublast_flush_buffer();
-}
-
-/**
  * ublast_clock_tms - clock a TMS transition
  * @tms: the TMS to be sent
  *
@@ -423,7 +401,7 @@ static void ublast_clock_tdi_flip_tms(int tdi, enum scan_type type)
  * actually sent, but stored in a buffer. The write is performed once
  * the buffer is filled, or if an explicit ublast_flush_buffer() is called.
  */
-static void ublast_queue_bytes(uint8_t *bytes, int nb_bytes)
+static void ublast_queue_bytes(const uint8_t *bytes, int nb_bytes)
 {
 	if (info.bufidx + nb_bytes > BUF_LEN) {
 		LOG_ERROR("buggy code, should never queue more that %d bytes",
@@ -462,62 +440,11 @@ static void ublast_tms_seq(const uint8_t *bits, int nb_bits)
 	ublast_idle_clock();
 }
 
-/**
- * ublast_tms - write a tms command
- * @cmd: tms command
- */
-static void ublast_tms(struct tms_command *cmd)
+void IOUblast::tx_tms(unsigned char *pat, int length, int force)
 {
-	DEBUG_JTAG_IO("(num_bits=%d)", cmd->num_bits);
-	ublast_tms_seq(cmd->bits, cmd->num_bits);
-}
-
-/**
- * ublast_path_move - write a TMS sequence transition to JTAG
- * @cmd: path transition
- *
- * Write a serie of TMS transitions, where each transition consists in :
- *  - writing out TCK=0, TMS=<new_state>, TDI=<???>
- *  - writing out TCK=1, TMS=<new_state>, TDI=<???> which triggers the transition
- * The function ensures that at the end of the sequence, the clock (TCK) is put
- * low.
- */
-static void ublast_path_move(struct pathmove_command *cmd)
-{
-	int i;
-
-	DEBUG_JTAG_IO("(num_states=%d, last_state=%d)",
-		  cmd->num_states, cmd->path[cmd->num_states - 1]);
-	for (i = 0; i < cmd->num_states; i++) {
-		if (tap_state_transition(tap_get_state(), false) == cmd->path[i])
-			ublast_clock_tms(0);
-		if (tap_state_transition(tap_get_state(), true) == cmd->path[i])
-			ublast_clock_tms(1);
-		tap_set_state(cmd->path[i]);
-	}
-	ublast_idle_clock();
-}
-
-/**
- * ublast_state_move - move JTAG state to the target state
- * @state: the target state
- *
- * Input the correct TMS sequence to the JTAG TAP so that we end up in the
- * target state. This assumes the current state (tap_get_state()) is correct.
- */
-static void ublast_state_move(tap_state_t state)
-{
-	uint8_t tms_scan;
-	int tms_len;
-
-	DEBUG_JTAG_IO("(from %s to %s)", tap_state_name(tap_get_state()),
-		  tap_state_name(state));
-	if (tap_get_state() == state)
-		return;
-	tms_scan = tap_get_tms_path(tap_get_state(), state);
-	tms_len = tap_get_tms_path_len(tap_get_state(), state);
-	ublast_tms_seq(&tms_scan, tms_len);
-	tap_set_state(state);
+	ublast_tms_seq(pat, length);
+	if (force)
+		ublast_flush_buffer();
 }
 
 /**
@@ -572,6 +499,10 @@ static int ublast_read_bitbang_tdos(uint8_t *buf, int nb_bits)
 	uint8_t tmp[8];
 
 	DEBUG_JTAG_IO("%s(buf=%p, num_bits=%d)", __func__, buf, nb_bits);
+	if (!buf) {
+		LOG_ERROR("%s called with NULL buf", __func__);
+		exit(1);
+	}
 
 	/*
 	 * Ensure all previous bitbang writes were issued to the dongle, so that
@@ -607,13 +538,16 @@ static int ublast_read_bitbang_tdos(uint8_t *buf, int nb_bits)
  * If TCK was high, the USB blaster will queue TDI on falling edge, and read TDO
  * on rising edge !!!
  */
-static void ublast_queue_tdi(uint8_t *bits, int nb_bits, enum scan_type scan)
+void IOUblast::txrx_block(const unsigned char *bits, unsigned char *tdos,
+                           int nb_bits, bool last)
 {
 	int nb8 = nb_bits / 8;
 	int nb1 = nb_bits % 8;
 	int nbfree_in_packet, i, trans = 0, read_tdos;
-	uint8_t *tdos = calloc(1, nb_bits / 8 + 1);
 	static uint8_t byte0[BUF_LEN];
+	const enum scan_type scan = (tdos ? SCAN_IO : SCAN_OUT);
+
+	DEBUG_JTAG_IO("%s(bits=%p, tdos=%p, num_bits=%d)", __func__, bits, tdos, nb_bits);
 
 	/*
 	 * As the last TDI bit should always be output in bitbang mode in order
@@ -663,7 +597,7 @@ static void ublast_queue_tdi(uint8_t *bits, int nb_bits, enum scan_type scan)
 	 */
 	for (i = 0; i < nb1; i++) {
 		int tdi = bits ? bits[nb8 + i / 8] & (1 << i) : 0;
-		if (bits && i == nb1 - 1)
+		if (bits && i == nb1 - 1 && last)
 			ublast_clock_tdi_flip_tms(tdi, scan);
 		else
 			ublast_clock_tdi(tdi, scan);
@@ -674,86 +608,10 @@ static void ublast_queue_tdi(uint8_t *bits, int nb_bits, enum scan_type scan)
 		ublast_read_bitbang_tdos(&tdos[nb8], nb1);
 	}
 
-	if (bits)
-		memcpy(bits, tdos, DIV_ROUND_UP(nb_bits, 8));
-	free(tdos);
-
 	/*
 	 * Ensure clock is in lower state
 	 */
 	ublast_idle_clock();
-}
-
-static void ublast_runtest(int cycles, tap_state_t state)
-{
-	DEBUG_JTAG_IO("%s(cycles=%i, end_state=%d)", __func__, cycles, state);
-
-	ublast_state_move(TAP_IDLE);
-	ublast_queue_tdi(NULL, cycles, SCAN_OUT);
-	ublast_state_move(state);
-}
-
-static void ublast_stableclocks(int cycles)
-{
-	DEBUG_JTAG_IO("%s(cycles=%i)", __func__, cycles);
-	ublast_queue_tdi(NULL, cycles, SCAN_OUT);
-}
-
-/**
- * ublast_scan - launches a DR-scan or IR-scan
- * @cmd: the command to launch
- *
- * Launch a JTAG IR-scan or DR-scan
- *
- * Returns ERROR_OK if OK, ERROR_xxx if a read/write error occured.
- */
-static int ublast_scan(struct scan_command *cmd)
-{
-	int scan_bits;
-	uint8_t *buf = NULL;
-	enum scan_type type;
-	int ret = ERROR_OK;
-	static const char * const type2str[] = { "", "SCAN_IN", "SCAN_OUT", "SCAN_IO" };
-	char *log_buf = NULL;
-
-	type = jtag_scan_type(cmd);
-	scan_bits = jtag_build_buffer(cmd, &buf);
-
-	if (cmd->ir_scan)
-		ublast_state_move(TAP_IRSHIFT);
-	else
-		ublast_state_move(TAP_DRSHIFT);
-
-	log_buf = hexdump(buf, DIV_ROUND_UP(scan_bits, 8));
-	DEBUG_JTAG_IO("%s(scan=%s, type=%s, bits=%d, buf=[%s], end_state=%d)", __func__,
-		  cmd->ir_scan ? "IRSCAN" : "DRSCAN",
-		  type2str[type],
-		  scan_bits, log_buf, cmd->end_state);
-	free(log_buf);
-
-	ublast_queue_tdi(buf, scan_bits, type);
-
-	/*
-	 * As our JTAG is in an unstable state (IREXIT1 or DREXIT1), move it
-	 * forward to a stable IRPAUSE or DRPAUSE.
-	 */
-	ublast_clock_tms(0);
-	if (cmd->ir_scan)
-		tap_set_state(TAP_IRPAUSE);
-	else
-		tap_set_state(TAP_DRPAUSE);
-
-	ret = jtag_read_buffer(buf, cmd);
-	if (buf)
-		free(buf);
-	ublast_state_move(cmd->end_state);
-	return ret;
-}
-
-static void ublast_usleep(int us)
-{
-	DEBUG_JTAG_IO("%s(us=%d)",  __func__, us);
-	jtag_sleep(us);
 }
 
 static void ublast_initial_wipeout(void)
@@ -777,53 +635,6 @@ static void ublast_initial_wipeout(void)
 	 * Put JTAG in RESET state (five 1 on TMS)
 	 */
 	ublast_tms_seq(&tms_reset, 5);
-	tap_set_state(TAP_RESET);
-}
-
-static int ublast_execute_queue(void)
-{
-	struct jtag_command *cmd;
-	static int first_call = 1;
-	int ret = ERROR_OK;
-
-	if (first_call) {
-		first_call--;
-		ublast_initial_wipeout();
-	}
-
-	for (cmd = jtag_command_queue; ret == ERROR_OK && cmd != NULL;
-	     cmd = cmd->next) {
-		switch (cmd->type) {
-		case JTAG_RESET:
-			ublast_reset(cmd->cmd.reset->trst, cmd->cmd.reset->srst);
-			break;
-		case JTAG_RUNTEST:
-			ublast_runtest(cmd->cmd.runtest->num_cycles,
-				       cmd->cmd.runtest->end_state);
-			break;
-		case JTAG_STABLECLOCKS:
-			ublast_stableclocks(cmd->cmd.stableclocks->num_cycles);
-			break;
-		case JTAG_TLR_RESET:
-			ublast_state_move(cmd->cmd.statemove->end_state);
-			break;
-		case JTAG_PATHMOVE:
-			ublast_path_move(cmd->cmd.pathmove);
-			break;
-		case JTAG_TMS:
-			ublast_tms(cmd->cmd.tms);
-			break;
-		case JTAG_SLEEP:
-			ublast_usleep(cmd->cmd.sleep->us);
-			break;
-		case JTAG_SCAN:
-			ret = ublast_scan(cmd->cmd.scan);
-			break;
-		}
-	}
-
-	ublast_flush_buffer();
-	return ret;
 }
 
 /**
@@ -835,7 +646,7 @@ static int ublast_execute_queue(void)
  *
  * Returns ERROR_OK if USB device found, error if not.
  */
-static int ublast_init(void)
+int IOUblast::Init(struct cable_t *cable, const char *dev, unsigned int freq)
 {
 	int ret, i;
 
@@ -846,7 +657,7 @@ static int ublast_init(void)
 				if (!info.drv) {
 					LOG_ERROR("Error registering lowlevel driver \"%s\"",
 						  info.lowlevel_name);
-					return ERROR_JTAG_DEVICE_ERROR;
+					return ERROR_JTAG_INIT_FAILED;
 				}
 				break;
 			}
@@ -862,7 +673,7 @@ static int ublast_init(void)
 
 	if (!info.drv) {
 		LOG_ERROR("No lowlevel driver available");
-		return ERROR_JTAG_DEVICE_ERROR;
+		return ERROR_JTAG_INIT_FAILED;
 	}
 
 	/*
@@ -879,13 +690,15 @@ static int ublast_init(void)
 
 	ret = info.drv->open(info.drv);
 
-	/*
-	 * Let lie here : the TAP is in an unknown state, but the first
-	 * execute_queue() will trigger a ublast_initial_wipeout(), which will
-	 * put the TAP in RESET.
-	 */
-	tap_set_state(TAP_RESET);
+	// Reset TAP
+	ublast_initial_wipeout();
+
 	return ret;
+}
+
+void IOUblast::flush()
+{
+	ublast_flush_buffer();
 }
 
 /**
@@ -897,184 +710,11 @@ static int ublast_init(void)
  *
  * Returns always ERROR_OK
  */
-static int ublast_quit(void)
+IOUblast::~IOUblast()
 {
 	uint8_t byte0 = 0;
 	unsigned int retlen;
 
 	ublast_buf_write(&byte0, 1, &retlen);
-	return info.drv->close(info.drv);
+	info.drv->close(info.drv);
 }
-
-COMMAND_HANDLER(ublast_handle_device_desc_command)
-{
-	if (CMD_ARGC != 1)
-		return ERROR_COMMAND_SYNTAX_ERROR;
-
-	info.ublast_device_desc = strdup(CMD_ARGV[0]);
-
-	return ERROR_OK;
-}
-
-COMMAND_HANDLER(ublast_handle_vid_pid_command)
-{
-	if (CMD_ARGC > 4) {
-		LOG_WARNING("ignoring extra IDs in ublast_vid_pid "
-					"(maximum is 2 pairs)");
-		CMD_ARGC = 4;
-	}
-
-	if (CMD_ARGC >= 2) {
-		COMMAND_PARSE_NUMBER(u16, CMD_ARGV[0], info.ublast_vid);
-		COMMAND_PARSE_NUMBER(u16, CMD_ARGV[1], info.ublast_pid);
-	} else {
-		LOG_WARNING("incomplete ublast_vid_pid configuration");
-	}
-
-	if (CMD_ARGC == 4) {
-		COMMAND_PARSE_NUMBER(u16, CMD_ARGV[2], info.ublast_vid_uninit);
-		COMMAND_PARSE_NUMBER(u16, CMD_ARGV[3], info.ublast_pid_uninit);
-	} else {
-		LOG_WARNING("incomplete ublast_vid_pid configuration");
-	}
-
-	return ERROR_OK;
-}
-
-COMMAND_HANDLER(ublast_handle_pin_command)
-{
-	uint8_t out_value;
-	const char * const pin_name = CMD_ARGV[0];
-	enum gpio_steer *steer = NULL;
-	static const char * const pin_val_str[] = {
-		[FIXED_0] = "0",
-		[FIXED_1] = "1",
-		[SRST] = "SRST driven",
-		[TRST] = "TRST driven",
-	};
-
-	if (CMD_ARGC > 2) {
-		LOG_ERROR("%s takes exactly one or two arguments", CMD_NAME);
-		return ERROR_COMMAND_SYNTAX_ERROR;
-	}
-
-	if (!strcmp(pin_name, "pin6"))
-		steer = &info.pin6;
-	if (!strcmp(pin_name, "pin8"))
-		steer = &info.pin8;
-	if (!steer) {
-		LOG_ERROR("%s: pin name must be \"pin6\" or \"pin8\"",
-			  CMD_NAME);
-		return ERROR_COMMAND_SYNTAX_ERROR;
-	}
-
-	if (CMD_ARGC == 1) {
-		LOG_INFO("%s: %s is set as %s\n", CMD_NAME, pin_name,
-			 pin_val_str[*steer]);
-	}
-
-	if (CMD_ARGC == 2) {
-		const char * const pin_value = CMD_ARGV[1];
-		char val = pin_value[0];
-
-		if (strlen(pin_value) > 1)
-			val = '?';
-		switch (tolower((unsigned char)val)) {
-		case '0':
-			*steer = FIXED_0;
-			break;
-		case '1':
-			*steer = FIXED_1;
-			break;
-		case 't':
-			*steer = TRST;
-			break;
-		case 's':
-			*steer = SRST;
-			break;
-		default:
-			LOG_ERROR("%s: pin value must be 0, 1, s (SRST) or t (TRST)",
-				pin_value);
-			return ERROR_COMMAND_SYNTAX_ERROR;
-		}
-
-		if (info.drv) {
-			out_value = ublast_build_out(SCAN_OUT);
-			ublast_queue_byte(out_value);
-			ublast_flush_buffer();
-		}
-	}
-	return ERROR_OK;
-}
-
-COMMAND_HANDLER(ublast_handle_lowlevel_drv_command)
-{
-	if (CMD_ARGC != 1)
-		return ERROR_COMMAND_SYNTAX_ERROR;
-
-	info.lowlevel_name = strdup(CMD_ARGV[0]);
-
-	return ERROR_OK;
-}
-
-COMMAND_HANDLER(ublast_firmware_command)
-{
-	if (CMD_ARGC != 1)
-		return ERROR_COMMAND_SYNTAX_ERROR;
-
-	info.firmware_path = strdup(CMD_ARGV[0]);
-
-	return ERROR_OK;
-}
-
-
-static const struct command_registration ublast_command_handlers[] = {
-	{
-		.name = "usb_blaster_device_desc",
-		.handler = ublast_handle_device_desc_command,
-		.mode = COMMAND_CONFIG,
-		.help = "set the USB device description of the USB-Blaster",
-		.usage = "description-string",
-	},
-	{
-		.name = "usb_blaster_vid_pid",
-		.handler = ublast_handle_vid_pid_command,
-		.mode = COMMAND_CONFIG,
-		.help = "the vendor ID and product ID of the USB-Blaster and " \
-			"vendor ID and product ID of the uninitialized device " \
-			"for USB-Blaster II",
-		.usage = "vid pid vid_uninit pid_uninit",
-	},
-	{
-		.name = "usb_blaster_lowlevel_driver",
-		.handler = ublast_handle_lowlevel_drv_command,
-		.mode = COMMAND_CONFIG,
-		.help = "set the lowlevel access for the USB Blaster (ftdi, ublast2)",
-		.usage = "(ftdi|ublast2)",
-	},
-	{
-		.name = "usb_blaster_pin",
-		.handler = ublast_handle_pin_command,
-		.mode = COMMAND_ANY,
-		.help = "show or set pin state for the unused GPIO pins",
-		.usage = "(pin6|pin8) (0|1|s|t)",
-	},
-		{
-		.name = "usb_blaster_firmware",
-		.handler = &ublast_firmware_command,
-		.mode = COMMAND_CONFIG,
-		.help = "configure the USB-Blaster II firmware location",
-		.usage = "path/to/blaster_xxxx.hex",
-	},
-	COMMAND_REGISTRATION_DONE
-};
-
-struct jtag_interface usb_blaster_interface = {
-	.name = "usb_blaster",
-	.commands = ublast_command_handlers,
-	.supported = DEBUG_CAP_TMS_SEQ,
-
-	.execute_queue = ublast_execute_queue,
-	.init = ublast_init,
-	.quit = ublast_quit,
-};
